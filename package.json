@@ -1,0 +1,39 @@
+{
+  "name": "@linden/falco-strm",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "falco-strm",
+  "author": "linden",
+  "license": "ISC",
+  "keywords": [
+    "strm"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.13.0",
+    "@types/node": "^22.15.17",
+    "eslint": "^9.0.0",
+    "tsup": "^8.2.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "unrs-resolver"
+    ]
+  }
+}
