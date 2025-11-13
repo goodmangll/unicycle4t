@@ -1,12 +1,12 @@
 {
-  "name": "@linden/falco-strm",
+  "name": "@linden/unicycle4t",
   "type": "module",
   "version": "1.0.0",
-  "description": "falco-strm",
+  "description": "unicycle4t",
   "author": "linden",
   "license": "ISC",
   "keywords": [
-    "strm"
+    "unicycle4t"
   ],
   "main": "index.js",
   "scripts": {
