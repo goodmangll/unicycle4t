@@ -1,6 +1,8 @@
 # 项目文件
 docs/
 
+/.trae
+
 # 依赖
 node_modules
 

@@ -1,5 +1,9 @@
 import type { LifecycleState } from './types'
 
+export class LifecycleCreatedState implements LifecycleState {
+  readonly name = 'created'
+}
+
 export class LifecycleStartedState implements LifecycleState {
   readonly name = 'started'
 }

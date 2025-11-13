@@ -1,4 +1,5 @@
 import type { LifecycleState, ObjectId } from './types'
+import { LifecycleCreatedState } from './lifecycleState'
 
 /**
  * 生命周期对象基类
@@ -13,7 +14,7 @@ export default class LifecycleObject {
   /**
    * 当前状态
    */
-  protected currentState!: LifecycleState
+  protected currentState: LifecycleState
 
   /**
    * 创建时间
@@ -36,6 +37,7 @@ export default class LifecycleObject {
   constructor() {
     this.createdAt = new Date()
     this.updatedAt = new Date()
+    this.currentState = new LifecycleCreatedState()
   }
 
   /**

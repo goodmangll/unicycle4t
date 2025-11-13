@@ -92,21 +92,46 @@ manager.events.on('object:deleted', (data) => {
 
 ### 🎯 LifecycleObject
 生命周期对象是框架的核心概念，代表具有生命周期的实体。每个生命周期对象都有唯一的ID和状态管理能力。
+- **默认初始状态**：对象在创建时自动设置为`created`状态
+- **状态管理**：支持状态的获取和设置操作
+- **属性存储**：可存储自定义属性键值对
 
 ### 🧠 LifecycleManager
 生命周期管理器负责协调生命周期对象的创建、状态转换和销毁。DefaultLifecycleManager是框架提供的默认实现。
+- **统一生命周期管理**：所有状态变更通过`changeState`方法统一处理
+- **生命周期完整性**：对象删除前会自动停止（如果需要），确保资源正确释放
+- **事件驱动**：在各个生命周期阶段触发相应事件
 
 ### 💾 LifecycleDao
 数据访问对象，负责生命周期对象的持久化。框架提供了基于内存的MemoryLifecycleDao实现。
+- **CRUD操作**：提供创建、读取、更新和删除功能
+- **可扩展性**：支持自定义实现以连接不同的存储后端
 
 ### 🏭 LifecycleFactory
 工厂类，负责创建生命周期对象的实例。DefaultLifecycleFactory是框架提供的默认实现。
+- **对象实例化**：封装生命周期对象的创建逻辑
+- **可扩展性**：支持创建自定义的生命周期对象类型
 
 ### 🔢 LifecycleIdGenerator
 ID生成器，负责为生命周期对象生成唯一标识符。UuidLifecycleIdGenerator是框架提供的默认实现。
+- **唯一性保证**：生成全局唯一的对象ID
+- **可定制性**：支持自定义ID生成策略
 
 ### 🔄 LifecycleState
-生命周期状态，定义了对象可能处于的不同状态，如LifecycleStartedState和LifecycleStoppedState。
+生命周期状态，定义了对象可能处于的不同状态，包括LifecycleCreatedState、LifecycleStartedState和LifecycleStoppedState。
+- **LifecycleCreatedState**：对象初始状态，表示对象已创建但尚未启动
+- **LifecycleStartedState**：表示对象正在运行的状态
+- **LifecycleStoppedState**：表示对象已停止的状态
+- **状态表示**：每个状态都有唯一的名称标识
+- **可扩展性**：支持定义自定义状态类型
+
+### 🔄 生命周期流程
+1. **创建(Create)**：对象被创建，自动设置为`created`初始状态
+2. **启动(Start)**：对象从`created`或`stopped`状态转换为`started`状态
+3. **停止(Stop)**：对象从`started`或`created`状态转换为`stopped`状态
+4. **删除(Delete)**：对象在删除前会自动检查并停止（如果需要），确保资源正确释放
+
+完整的生命周期事件序列为：`object:created` → `object:stateChanged` (started) → `object:stateChanged` (stopped) → `object:deleted`
 
 ---
 
@@ -115,28 +140,28 @@ ID生成器，负责为生命周期对象生成唯一标识符。UuidLifecycleId
 ### DefaultLifecycleManager
 
 ```typescript
+import type { LifecycleDao, LifecycleEventData, LifecycleFactory, LifecycleIdGenerator, LifecycleObject, ObjectId } from '@linden/unicycle4t'
 import { Emitter } from 'mitt'
-import type { LifecycleEventData, ObjectId, LifecycleFactory, LifecycleDao, LifecycleIdGenerator, LifecycleObject } from '@linden/unicycle4t'
 
 class DefaultLifecycleManager {
   // 事件发射器
   public readonly events: Emitter<LifecycleEventData>
-  
+
   // 构造函数，支持依赖注入
   constructor(factory?: LifecycleFactory, dao?: LifecycleDao, idGenerator?: LifecycleIdGenerator)
-  
+
   // 创建新的生命周期对象
   public async createObject(): Promise<LifecycleObject>
-  
+
   // 根据ID获取生命周期对象
   public async getObject(id: ObjectId): Promise<LifecycleObject | null>
-  
+
   // 启动生命周期对象
   public async startObject(id: ObjectId): Promise<void>
-  
+
   // 停止生命周期对象
   public async stopObject(id: ObjectId): Promise<void>
-  
+
   // 删除生命周期对象
   public async deleteObject(id: ObjectId): Promise<void>
 }
@@ -145,27 +170,27 @@ class DefaultLifecycleManager {
 ### LifecycleObject
 
 ```typescript
-import type { ObjectId, LifecycleState } from '@linden/unicycle4t'
+import type { LifecycleState, ObjectId } from '@linden/unicycle4t'
 
 class LifecycleObject {
   // 获取对象ID
   getId(): ObjectId
-  
+
   // 设置对象ID
   setId(id: ObjectId): void
-  
+
   // 获取对象状态
   getState(): LifecycleState
-  
+
   // 设置对象状态
   setState(state: LifecycleState): void
-  
+
   // 添加对象属性
   setProperty(key: string, value: unknown): void
-  
+
   // 获取对象属性
   getProperty(key: string): unknown
-  
+
   // 检查属性是否存在
   hasProperty(key: string): boolean
 }
@@ -174,22 +199,21 @@ class LifecycleObject {
 ### MemoryLifecycleDao
 
 ```typescript
-import type { ObjectId, LifecycleObject } from '@linden/unicycle4t'
-import type { LifecycleDao } from '@linden/unicycle4t'
+import type { LifecycleDao, LifecycleObject, ObjectId } from '@linden/unicycle4t'
 
 class MemoryLifecycleDao implements LifecycleDao {
   // 构造函数
   constructor()
-  
+
   // 创建生命周期对象
   public async create(object: LifecycleObject): Promise<void>
-  
+
   // 获取生命周期对象
   public async get(id: ObjectId): Promise<LifecycleObject | null>
-  
+
   // 更新生命周期对象
   public async update(object: LifecycleObject): Promise<void>
-  
+
   // 删除生命周期对象
   public async delete(id: ObjectId): Promise<void>
 }
@@ -208,7 +232,7 @@ class CustomLifecycleObject extends LifecycleObject {
   initialize(data: any) {
     this.setProperty('customData', data)
   }
-  
+
   getCustomData() {
     return this.getProperty('customData')
   }
@@ -236,21 +260,21 @@ import type { ObjectId } from '@linden/unicycle4t'
 // 自定义DAO实现（例如基于LocalStorage）
 class LocalStorageLifecycleDao implements LifecycleDao {
   private readonly storageKey = 'lifecycle-objects'
-  
+
   constructor() {
     if (!localStorage.getItem(this.storageKey)) {
       localStorage.setItem(this.storageKey, JSON.stringify({}))
     }
   }
-  
+
   private getStorage(): Record<string, any> {
     return JSON.parse(localStorage.getItem(this.storageKey) || '{}')
   }
-  
+
   private setStorage(data: Record<string, any>): void {
     localStorage.setItem(this.storageKey, JSON.stringify(data))
   }
-  
+
   // 将LifecycleObject转换为可序列化的对象
   private serializeObject(object: LifecycleObject): any {
     // 提取对象的基本信息进行序列化
@@ -263,42 +287,42 @@ class LocalStorageLifecycleDao implements LifecycleDao {
       }
     }
   }
-  
+
   // 从序列化数据重建LifecycleObject
   private deserializeObject(data: any): LifecycleObject {
     // 这里实现从数据重建LifecycleObject的逻辑
     const object = new LifecycleObject()
     object.setId(data.id)
     object.setState(data.state)
-    
+
     // 恢复属性
     if (data.properties) {
       Object.entries(data.properties).forEach(([key, value]) => {
         object.setProperty(key, value)
       })
     }
-    
+
     return object
   }
-  
+
   async create(object: LifecycleObject): Promise<void> {
     const storage = this.getStorage()
     storage[object.getId()] = this.serializeObject(object)
     this.setStorage(storage)
   }
-  
+
   async get(id: ObjectId): Promise<LifecycleObject | null> {
     const storage = this.getStorage()
     const data = storage[id]
     return data ? this.deserializeObject(data) : null
   }
-  
+
   async update(object: LifecycleObject): Promise<void> {
     const storage = this.getStorage()
     storage[object.getId()] = this.serializeObject(object)
     this.setStorage(storage)
   }
-  
+
   async delete(id: ObjectId): Promise<void> {
     const storage = this.getStorage()
     delete storage[id]

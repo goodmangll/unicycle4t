@@ -60,6 +60,18 @@ export default class DefaultLifecycleManager implements LifecycleManager {
   }
 
   public async deleteObject(id: ObjectId): Promise<void> {
+    // 先获取对象，检查其当前状态
+    const object = await this.getObject(id)
+
+    if (object) {
+      // 如果对象不是停止状态，则先停止它（包括从created状态转换）
+      const currentState = object.getState()
+      if (currentState.name !== 'stopped') {
+        await this.stopObject(id)
+      }
+    }
+
+    // 然后删除对象
     await this.dao.delete(id)
 
     // 发射对象删除事件
