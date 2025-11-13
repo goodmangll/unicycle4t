@@ -23,9 +23,15 @@ export default interface LifecycleManager {
     getObject(id: ObjectId): Promise<LifecycleObject | null>;
 
     /**
-     * 删除一个生命周期对象
+     * 停止一个生命周期对象
      * @param id 对象ID
      */
     stopObject(id: ObjectId): Promise<void>;
+
+    /**
+     * 删除一个生命周期对象
+     * @param id 对象ID
+     */
+    deleteObject(id: ObjectId): Promise<void>;
 
 }

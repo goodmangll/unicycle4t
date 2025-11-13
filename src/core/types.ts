@@ -1,3 +1,5 @@
+import type LifecycleObject from './lifecycleObject';
+
 export type ObjectId = string | number
 
 
@@ -11,4 +13,36 @@ export interface LifecycleState {
      */
     readonly name: string;
 
+}
+
+/**
+ * 生命周期事件类型定义
+ * 定义所有生命周期相关的事件及其数据结构
+ */
+export interface LifecycleEventData {
+    /**
+     * 对象创建事件
+     */
+    'object:created': {
+        object: LifecycleObject;
+        timestamp: Date;
+    };
+    
+    /**
+     * 对象状态变化事件
+     */
+    'object:stateChanged': {
+        object: LifecycleObject;
+        oldState: LifecycleState;
+        newState: LifecycleState;
+        timestamp: Date;
+    };
+    
+    /**
+     * 对象删除事件
+     */
+    'object:deleted': {
+        objectId: ObjectId;
+        timestamp: Date;
+    };
 }

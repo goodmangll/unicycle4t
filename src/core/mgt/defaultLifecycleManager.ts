@@ -1,3 +1,4 @@
+import mitt, { Emitter } from 'mitt';
 import LifecycleObject from '../lifecycleObject';
 import { LifecycleStartedState, LifecycleStoppedState } from '../lifecycleState';
 import LifecycleFactory from '../lifecycleFactory';
@@ -7,13 +8,14 @@ import { MemoryLifecycleDao } from '../dao/memoryLifecycleDao';
 import UuidLifecycleIdGenerator from '../dao/uuidLifecycleIdGenerator';
 import LifecycleIdGenerator from '../dao/lifecycleIdGenerator';
 import LifecycleManager from './lifecycleManager';
-import type { LifecycleState } from '../types';
+import type { LifecycleState, LifecycleEventData } from '../types';
 
 /**
  * 生命周期管理器
  * 负责管理所有生命周期对象的创建、状态转换和销毁
  */
 export default class DefaultLifecycleManager implements LifecycleManager {
+  public readonly events: Emitter<LifecycleEventData>;
   private readonly factory: LifecycleFactory;
   private readonly dao: LifecycleDao;
   private readonly idGenerator: LifecycleIdGenerator;
@@ -23,6 +25,7 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     dao?: LifecycleDao,
     idGenerator?: LifecycleIdGenerator
   ) {
+    this.events = mitt<LifecycleEventData>();
     this.factory = factory ?? new DefaultLifecycleFactory();
     this.dao = dao ?? new MemoryLifecycleDao();
     this.idGenerator = idGenerator ?? new UuidLifecycleIdGenerator();
@@ -32,6 +35,13 @@ export default class DefaultLifecycleManager implements LifecycleManager {
      const object = await this.factory.create();
      object.setId(this.idGenerator.generate(object));
      await this.dao.create(object);
+     
+     // 发射对象创建事件
+     this.events.emit('object:created', {
+       object,
+       timestamp: new Date()
+     });
+     
      return object;
   }
 
@@ -45,6 +55,16 @@ export default class DefaultLifecycleManager implements LifecycleManager {
 
   public async stopObject(id: string): Promise<void> {
     await this.changeState(id, LifecycleStoppedState);
+  }
+
+  public async deleteObject(id: string): Promise<void> {
+    await this.dao.delete(id);
+    
+    // 发射对象删除事件
+    this.events.emit('object:deleted', {
+      objectId: id,
+      timestamp: new Date()
+    });
   }
 
   /**
@@ -75,9 +95,17 @@ export default class DefaultLifecycleManager implements LifecycleManager {
       throw new Error(`Object not found`);
     }
 
+    const oldState = object.getState();
     object.setState(state);
     await this.onChange(object);
-    // TODO: 触发状态变化事件
+    
+    // 发射状态变化事件
+    this.events.emit('object:stateChanged', {
+      object,
+      oldState,
+      newState: state,
+      timestamp: new Date()
+    });
   }
 
   protected async onChange(object: LifecycleObject) {
