@@ -1,12 +1,8 @@
-import LifecycleFactory from "./lifecycleFactory";
-import LifecycleObject from "./lifecycleObject";
+import type LifecycleFactory from './lifecycleFactory'
+import LifecycleObject from './lifecycleObject'
 
 export default class DefaultLifecycleFactory implements LifecycleFactory {
-
-    
-    async create(): Promise<LifecycleObject> {
-        return new LifecycleObject();
-    }
-
-    
+  async create(): Promise<LifecycleObject> {
+    return new LifecycleObject()
+  }
 }

@@ -1,10 +1,9 @@
-import type { LifecycleState } from "./types";
-
+import type { LifecycleState } from './types'
 
 export class LifecycleStartedState implements LifecycleState {
-    readonly name = 'started';
+  readonly name = 'started'
 }
 
 export class LifecycleStoppedState implements LifecycleState {
-    readonly name = 'stopped';
+  readonly name = 'stopped'
 }

@@ -1,4 +1,4 @@
-import type { LifecycleState, ObjectId} from './types';
+import type { LifecycleState, ObjectId } from './types'
 
 /**
  * 生命周期对象基类
@@ -8,75 +8,73 @@ export default class LifecycleObject {
   /**
    * 对象唯一标识
    */
-  protected id!: ObjectId;
+  protected id!: ObjectId
 
   /**
    * 当前状态
    */
-  protected currentState!: LifecycleState;
+  protected currentState!: LifecycleState
 
   /**
    * 创建时间
    */
-  protected readonly createdAt: Date;
+  protected readonly createdAt: Date
 
   /**
    * 最后更新时间
    */
-  protected updatedAt: Date;
+  protected updatedAt: Date
 
   /**
    * 自定义属性
    */
-  protected attributes: Map<string, unknown> = new Map();
+  protected attributes: Map<string, unknown> = new Map()
 
   /**
    * 构造函数
-   * @param id 对象唯一标识
    */
   constructor() {
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.createdAt = new Date()
+    this.updatedAt = new Date()
   }
 
   /**
    * 获取对象ID
    */
   public getId(): ObjectId {
-    return this.id;
+    return this.id
   }
 
   public setId(id: ObjectId): void {
-    this.id = id;
+    this.id = id
   }
 
   public setAttribute(key: string, value: unknown): void {
-    this.attributes.set(key, value);
+    this.attributes.set(key, value)
   }
 
   public getAttribute(key: string): unknown {
-    return this.attributes.get(key);
+    return this.attributes.get(key)
   }
 
   public removeAttribute(key: string): void {
-    this.attributes.delete(key);
-  }
-  
-  public getState(): LifecycleState {
-    return this.currentState;
+    this.attributes.delete(key)
   }
 
+  public getState(): LifecycleState {
+    return this.currentState
+  }
 
   public getCreatedAt(): Date {
-    return this.createdAt;
+    return this.createdAt
   }
 
   public getUpdatedAt(): Date {
-    return this.updatedAt;
+    return this.updatedAt
   }
 
   public setState(newState: LifecycleState): void {
-    this.currentState = newState;
-    this.updatedAt = new Date();
+    this.currentState = newState
+    this.updatedAt = new Date()
   }
-} 
+}

@@ -14,20 +14,27 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsup",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
     "mitt": "^3.0.1",
-    "uuidv4": "^6.2.13"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.0",
     "@types/node": "^22.15.17",
+    "@vitest/coverage-v8": "^4.0.8",
     "eslint": "^9.0.0",
+    "jiti": "^2.6.1",
     "tsup": "^8.2.0",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.8"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
