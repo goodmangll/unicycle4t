@@ -3,12 +3,13 @@ import type LifecycleDao from '../dao/lifecycleDao'
 import type LifecycleIdGenerator from '../dao/lifecycleIdGenerator'
 import type LifecycleFactory from '../lifecycleFactory'
 import type LifecycleObject from '../lifecycleObject'
-import type { LifecycleEventData, LifecycleState } from '../types'
+import type { LifecycleEventData, LifecycleState, ObjectId } from '../types'
 import type LifecycleManager from './lifecycleManager'
 import mitt from 'mitt'
 import { MemoryLifecycleDao } from '../dao/memoryLifecycleDao'
 import UuidLifecycleIdGenerator from '../dao/uuidLifecycleIdGenerator'
 import DefaultLifecycleFactory from '../defaultLifecycleFactory'
+import { LifecycleError } from '../errors'
 import { LifecycleStartedState, LifecycleStoppedState } from '../lifecycleState'
 
 /**
@@ -46,19 +47,19 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     return object
   }
 
-  public async getObject(id: string): Promise<LifecycleObject | null> {
+  public async getObject(id: ObjectId): Promise<LifecycleObject | null> {
     return await this.dao.get(id)
   }
 
-  public async startObject(id: string): Promise<void> {
+  public async startObject(id: ObjectId): Promise<void> {
     await this.changeState(id, new LifecycleStartedState())
   }
 
-  public async stopObject(id: string): Promise<void> {
+  public async stopObject(id: ObjectId): Promise<void> {
     await this.changeState(id, new LifecycleStoppedState())
   }
 
-  public async deleteObject(id: string): Promise<void> {
+  public async deleteObject(id: ObjectId): Promise<void> {
     await this.dao.delete(id)
 
     // 发射对象删除事件
@@ -73,7 +74,7 @@ export default class DefaultLifecycleManager implements LifecycleManager {
    * @param id 对象ID
    * @param state 目标状态
    */
-  protected async changeState(id: string, state: LifecycleState): Promise<void>
+  protected async changeState(id: ObjectId, state: LifecycleState): Promise<void>
 
   /**
    * 改变对象状态
@@ -87,13 +88,19 @@ export default class DefaultLifecycleManager implements LifecycleManager {
    * @param idOrObject 对象ID或生命周期对象
    * @param state 目标状态
    */
-  protected async changeState(idOrObject: string | LifecycleObject, state: LifecycleState): Promise<void> {
-    const object = typeof idOrObject === 'string'
-      ? await this.getObject(idOrObject)
-      : idOrObject
+  protected async changeState(idOrObject: ObjectId | LifecycleObject, state: LifecycleState): Promise<void> {
+    let object: LifecycleObject | null
+    if (typeof idOrObject === 'object') {
+      // 如果是 LifecycleObject 类型
+      object = idOrObject
+    }
+    else {
+      // 如果是 ObjectId 类型（string 或 number）
+      object = await this.getObject(idOrObject)
+    }
 
     if (!object) {
-      throw new Error(`Object not found`)
+      throw new LifecycleError(`Lifecycle object not found: ${typeof idOrObject === 'object' ? idOrObject.getId() : idOrObject}`)
     }
 
     const oldState = object.getState()

@@ -18,7 +18,7 @@ export interface LifecycleState {
  * 生命周期事件类型定义
  * 定义所有生命周期相关的事件及其数据结构
  */
-export interface LifecycleEventData {
+export interface LifecycleEventData extends Record<string | symbol, unknown> {
   /**
    * 对象创建事件
    */

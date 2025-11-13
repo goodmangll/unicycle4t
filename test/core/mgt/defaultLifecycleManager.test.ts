@@ -100,7 +100,7 @@ describe('defaultLifecycleManager', () => {
     })
 
     it('启动不存在的对象应该抛出错误', async () => {
-      await expect(manager.startObject('nonexistent-id')).rejects.toThrow('Object not found')
+      await expect(manager.startObject('nonexistent-id')).rejects.toThrow('Lifecycle object not found: nonexistent-id')
     })
 
     it('应该更新对象的 updatedAt 时间', async () => {
