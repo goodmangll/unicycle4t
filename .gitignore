@@ -3,6 +3,8 @@ docs/
 
 /.trae
 
+/CLAUDE.md
+
 # 依赖
 node_modules
 

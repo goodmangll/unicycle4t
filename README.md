@@ -224,8 +224,7 @@ class MemoryLifecycleDao implements LifecycleDao {
 ### 🛠️ 自定义生命周期对象
 
 ```typescript
-import LifecycleObject from '@linden/unicycle4t'
-import DefaultLifecycleFactory from '@linden/unicycle4t'
+import { DefaultLifecycleFactory, LifecycleObject } from '@linden/unicycle4t'
 
 // 自定义生命周期对象类
 class CustomLifecycleObject extends LifecycleObject {
@@ -253,9 +252,7 @@ const manager = new DefaultLifecycleManager(new CustomLifecycleFactory())
 ### 💾 自定义存储实现
 
 ```typescript
-import type LifecycleDao from '@linden/unicycle4t'
-import type LifecycleObject from '@linden/unicycle4t'
-import type { ObjectId } from '@linden/unicycle4t'
+import type { LifecycleDao, LifecycleObject, ObjectId } from '@linden/unicycle4t'
 
 // 自定义DAO实现（例如基于LocalStorage）
 class LocalStorageLifecycleDao implements LifecycleDao {
@@ -422,6 +419,61 @@ ISC 许可证是一种宽松的开源许可证，允许：
 
 - 在所有副本或重要部分中包含原始版权声明和许可证声明
 - 许可证不提供任何担保，也不对任何损害负责
+
+---
+
+## 📚 示例项目
+
+我们提供了丰富的示例来帮助您快速上手和了解框架的实际应用：
+
+### 🔗 快速学习
+- **[基础用法示例](./examples/basic-usage/)** - 核心API使用和自定义对象扩展
+- **[API文档参考](#-api文档)** - 完整的接口说明和参数详解
+
+### 🏗️ 实际应用场景
+- **[Web会话管理](./examples/web-session-manager/)** - 用户会话生命周期管理，权限控制
+- **[任务队列系统](./examples/task-queue/)** - 异步任务处理，优先级队列，依赖管理
+- **[缓存管理系统](./examples/cache-manager/)** - 高性能LRU缓存，TTL过期处理
+- **[连接池管理](./examples/connection-pool/)** - 数据库连接池，并发控制，健康检查
+
+### 🚀 运行示例
+
+```bash
+# 克隆仓库
+git clone https://github.com/linden/unicycle4t.git
+cd unicycle4t
+
+# 安装依赖
+pnpm install
+
+# 运行基础示例
+cd examples/basic-usage
+pnpm install
+pnpm start
+
+# 运行Web会话管理示例
+cd ../web-session-manager
+pnpm install
+pnpm start
+```
+
+## 🎯 示例特色
+
+| 示例项目 | 应用场景 | 学习要点 |
+|---------|---------|---------|
+| 基础用法 | 框架入门 | 生命周期管理、事件系统、自定义对象 |
+| Web会话管理 | 用户认证 | 会话管理、权限控制、状态持久化 |
+| 任务队列 | 异步处理 | 任务调度、优先级、错误重试、依赖处理 |
+| 缓存管理 | 性能优化 | LRU算法、TTL管理、内存优化、热点分析 |
+| 连接池 | 资源管理 | 连接复用、并发控制、健康检查、性能监控 |
+
+### 💡 从示例中学到的最佳实践
+
+1. **生命周期设计模式** - 如何设计具有明确生命周期的对象
+2. **事件驱动架构** - 使用事件系统实现松耦合设计
+3. **资源管理策略** - 高效的内存使用和资源回收
+4. **扩展性设计** - 通过继承和组合实现功能扩展
+5. **性能优化技巧** - 缓存、连接池、批处理等优化方法
 
 ---
 
