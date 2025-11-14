@@ -14,13 +14,18 @@
     <img src="https://img.shields.io/badge/test-coverage-90%2B-green" alt="Test Coverage">
   </a>
   <a href="#">
-    <img src="https://img.shields.io/badge/npm-v1.0.0-orange" alt="NPM Version">
+    <img src="https://img.shields.io/badge/npm-v0.5.0-orange" alt="NPM Version">
+  </a>
+  <a href="https://github.com/linden/unicycle4t/blob/main/VERSIONING.md">
+    <img src="https://img.shields.io/badge/versioning-SEMVER-blue" alt="Versioning">
   </a>
 </div>
 
 <br>
 
 Unicycle4T是一个轻量级、灵活的TypeScript生命周期管理框架，为应用程序中的对象提供统一的生命周期管理解决方案。通过标准化对象的创建、启动、停止和销毁流程，帮助开发者构建更可靠、可维护的应用系统。
+
+> 📋 **版本说明**: 当前版本为 `0.5.0` Beta，核心功能完整但API仍在演进中。建议查看 [版本管理策略](VERSIONING.md) 了解详细信息。
 
 ## ✨ 特性
 

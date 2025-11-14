@@ -1,14 +1,39 @@
 {
   "name": "@linden/unicycle4t",
   "type": "module",
-  "version": "1.0.0",
-  "description": "unicycle4t",
+  "version": "0.5.0",
+  "description": "轻量级TypeScript生命周期管理框架",
   "author": "linden",
   "license": "ISC",
   "keywords": [
+    "lifecycle",
+    "management",
+    "typescript",
+    "framework",
+    "state-machine",
     "unicycle4t"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linden/unicycle4t.git"
+  },
+  "bugs": {
+    "url": "https://github.com/linden/unicycle4t/issues"
+  },
+  "homepage": "https://github.com/linden/unicycle4t#readme",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
