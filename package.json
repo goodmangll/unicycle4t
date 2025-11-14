@@ -5,6 +5,14 @@
   "description": "轻量级TypeScript生命周期管理框架",
   "author": "linden",
   "license": "ISC",
+  "homepage": "https://github.com/goodmangll/unicycle4t#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goodmangll/unicycle4t.git"
+  },
+  "bugs": {
+    "url": "https://github.com/goodmangll/unicycle4t/issues"
+  },
   "keywords": [
     "lifecycle",
     "management",
@@ -13,27 +21,19 @@
     "state-machine",
     "unicycle4t"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist",
+    "LICENSE",
     "README.md",
-    "LICENSE"
+    "dist"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/linden/unicycle4t.git"
-  },
-  "bugs": {
-    "url": "https://github.com/linden/unicycle4t/issues"
-  },
-  "homepage": "https://github.com/linden/unicycle4t#readme",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",

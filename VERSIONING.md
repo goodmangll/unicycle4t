@@ -28,7 +28,7 @@ graph LR
 
 ## 🔄 版本号规则
 
-### 版���格式：`MAJOR.MINOR.PATCH`
+### 版本格式：`MAJOR.MINOR.PATCH`
 
 - **MAJOR** (`0` → `1`): 不兼容的API修改
 - **MINOR** (`0.5` → `0.6`): 向后兼容的功能新增
@@ -79,33 +79,11 @@ graph LR
 
 ### 计划中的版本
 
-#### v0.9.0 - Release Candidate
-- 🎯 **目标**: API稳定，功能完善
-- 📋 **预期功能**:
-  - 高级查询功能 (DAO层)
-  - 配置管理系统
-  - 生命周期钩子机制
-  - 中间件/拦截器支持
-
-#### v1.0.0 - Stable Production
-- 🎯 **目标**: 生产就绪，企业级特性
-- 📋 **预期功能**:
-  - 插件系统
-  - 完整监控和日志
-  - 安全特性
-  - 性能优化
+暂无
 
 ## 🚀 升级指南
 
-### 从 `0.5.x` 到 `0.9.x`
-- 🔄 **兼容性**: 基本向后兼容
-- ⚠️ **注意**: 部分API可能调整
-- 📖 **建议**: 查看CHANGELOG了解变更
-
-### 从 `0.9.x` 到 `1.0.0`
-- ✅ **兼容性**: 完全向后兼容
-- 🎉 **稳定性**: 生产就绪
-- 🔒 **承诺**: 严格遵循SEMVER
+暂无
 
 ## 🔧 开发者指南
 
@@ -126,7 +104,7 @@ graph LR
 ### 版本相关问题
 - **Bug报告**: [GitHub Issues](https://github.com/linden/unicycle4t/issues)
 - **功能建议**: [GitHub Discussions](https://github.com/linden/unicycle4t/discussions)
-- **安全问题**: security@linden.dev
+- **安全问题**: xxxxxx
 
 ### 版本通知
 - **发布通知**: 关注GitHub Releases
