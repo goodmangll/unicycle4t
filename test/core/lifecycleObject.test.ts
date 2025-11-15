@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+
 import LifecycleObject from '../../src/core/lifecycleObject'
 import { LifecycleStartedState, LifecycleStoppedState } from '../../src/core/lifecycleState'
 

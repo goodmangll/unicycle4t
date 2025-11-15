@@ -1,56 +1,57 @@
+/* eslint-disable no-console */
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
 /**
  * 连接���态枚举
  */
 export enum ConnectionStatus {
-  IDLE = 'idle',
   BUSY = 'busy',
   CHECKED_OUT = 'checked_out',
   ERROR = 'error',
+  IDLE = 'idle',
 }
 
 /**
  * 连接配置
  */
 export interface ConnectionConfig {
-  host: string
-  port: number
   database?: string
-  username?: string
+  host: string
+  options?: Record<string, unknown>
   password?: string
-  options?: Record<string, any>
+  port: number
+  username?: string
 }
 
 /**
  * 连接信息
  */
 export interface ConnectionInfo {
-  id: string
   config: ConnectionConfig
-  status: ConnectionStatus
   createdAt: Date
-  lastUsed: Date
-  usageCount: number
   errorCount: number
-  totalUseTime: number
+  id: string
   isActive: boolean
+  lastUsed: Date
+  status: ConnectionStatus
+  totalUseTime: number
+  usageCount: number
 }
 
 /**
  * 连接池统计
  */
 export interface PoolStats {
-  totalConnections: number
   activeConnections: number
-  idleConnections: number
+  averageUseTime: number
   busyConnections: number
   errorConnections: number
-  totalCheckouts: number
-  totalCheckins: number
-  totalErrors: number
-  averageUseTime: number
+  idleConnections: number
   poolUtilization: number
+  totalCheckins: number
+  totalCheckouts: number
+  totalConnections: number
+  totalErrors: number
 }
 
 /**
@@ -86,10 +87,10 @@ export class ConnectionPool {
   constructor(
     config: ConnectionConfig,
     options: {
-      minConnections?: number
-      maxConnections?: number
       idleTimeout?: number
+      maxConnections?: number
       maxLifetime?: number
+      minConnections?: number
     } = {},
   ) {
     this.minConnections = options.minConnections ?? 5
@@ -119,7 +120,7 @@ export class ConnectionPool {
   /**
    * 获取连接
    */
-  async acquireConnection(userId?: string): Promise<string | null> {
+  async acquireConnection(userId?: string): Promise<null | string> {
     try {
       // 1. 尝试从可用连接池获取
       let connectionId = this.availableConnections.pop()

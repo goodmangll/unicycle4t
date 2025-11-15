@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import process from 'node:process'
+
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
 /**
@@ -21,7 +23,7 @@ export class SimpleUsage {
     userSession.setAttribute('userRole', 'admin')
 
     console.log(`✅ 对象已创建，ID: ${userSession.getId()}`)
-    console.log(`📊 用户信息:`, {
+    console.log('📊 用户信息:', {
       userId: userSession.getAttribute('userId'),
       loginTime: userSession.getAttribute('loginTime'),
       userRole: userSession.getAttribute('userRole'),
@@ -158,7 +160,7 @@ export class SimpleUsage {
 }
 
 // 如果直接运行���文件
-const runDemo = async () => {
+async function runDemo() {
   const demo = new SimpleUsage()
 
   try {

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+
 import { MemoryLifecycleDao } from '../../../src/core/dao/memoryLifecycleDao'
 import LifecycleObject from '../../../src/core/lifecycleObject'
 import { LifecycleStartedState } from '../../../src/core/lifecycleState'

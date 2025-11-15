@@ -99,7 +99,7 @@ console.log({
   totalItems: stats.totalItems, // 总项数
   hitRate: stats.hitRate, // 命中率
   memoryUsage: stats.memoryUsage, // 内存使用量
-  totalEvictions: stats.totalEvictions // 淘汰次数
+  totalEvictions: stats.totalEvictions, // 淘汰次数
 })
 
 // 获取热点数据
@@ -113,12 +113,12 @@ await cache.set('user:object', {
   id: 1,
   profile: { name: 'John', age: 30 },
   tags: ['developer', 'javascript'],
-  lastLogin: new Date()
+  lastLogin: new Date(),
 })
 
 await cache.set('config:array', [
   { key: 'theme', value: 'dark' },
-  { key: 'lang', value: 'zh-CN' }
+  { key: 'lang', value: 'zh-CN' },
 ])
 ```
 

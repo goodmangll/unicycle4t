@@ -58,14 +58,14 @@ const connectionPool = new ConnectionPool(
   {
     host: 'localhost',
     port: 5432,
-    database: 'myapp'
+    database: 'myapp',
   },
   {
     minConnections: 5, // 最小连接数
     maxConnections: 20, // 最大连接数
     idleTimeout: 300000, // 空闲超时 5分钟
-    maxLifetime: 3600000 // 最大生命周期 1小时
-  }
+    maxLifetime: 3600000, // 最大生命周期 1小时
+  },
 )
 
 // 初始化连接池
@@ -121,7 +121,7 @@ console.log({
   totalConnections: stats.totalConnections, // 总连接数
   poolUtilization: stats.poolUtilization, // 连接池利用率
   averageUseTime: stats.averageUseTime, // 平均使用时间
-  totalErrors: stats.totalErrors // 总错误次数
+  totalErrors: stats.totalErrors, // 总错误次数
 })
 
 // 获取连接详情
@@ -262,7 +262,7 @@ const pool = new ConnectionPool(config, {
   minConnections: Math.ceil(expectedConcurrency * 0.2), // 20%作为最小连接
   maxConnections: Math.ceil(expectedConcurrency * 1.2), // 120%作为最大连接
   idleTimeout: 10 * 60 * 1000, // 10分钟空闲超时
-  maxLifetime: 60 * 60 * 1000 // 1小时最大生命周期
+  maxLifetime: 60 * 60 * 1000, // 1小时最大生命周期
 })
 ```
 

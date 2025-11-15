@@ -1,23 +1,24 @@
+/* eslint-disable no-console */
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
 /**
  * 任务状态枚举
  */
 export enum TaskStatus {
-  PENDING = 'pending',
-  RUNNING = 'running',
+  CANCELLED = 'cancelled',
   COMPLETED = 'completed',
   FAILED = 'failed',
-  CANCELLED = 'cancelled',
+  PENDING = 'pending',
+  RUNNING = 'running',
 }
 
 /**
  * 任务优先级
  */
 export enum TaskPriority {
+  HIGH = 2,
   LOW = 0,
   NORMAL = 1,
-  HIGH = 2,
   URGENT = 3,
 }
 
@@ -25,20 +26,20 @@ export enum TaskPriority {
  * 任务数据
  */
 export interface TaskData {
-  id: string
-  type: string
-  payload: any
-  priority: TaskPriority
-  status: TaskStatus
-  createdAt: Date
-  startedAt?: Date
   completedAt?: Date
-  retryCount: number
-  maxRetries: number
-  timeout: number
-  result?: any
-  error?: string
+  createdAt: Date
   dependencies: string[]
+  error?: string
+  id: string
+  maxRetries: number
+  payload: Record<string, unknown>
+  priority: TaskPriority
+  result?: Record<string, unknown>
+  retryCount: number
+  startedAt?: Date
+  status: TaskStatus
+  timeout: number
+  type: string
 }
 
 /**
@@ -68,12 +69,12 @@ export class TaskQueue {
    */
   async addTask(
     type: string,
-    payload: any,
+    payload: Record<string, unknown>,
     options: {
-      priority?: TaskPriority
-      maxRetries?: number
-      timeout?: number
       dependencies?: string[]
+      maxRetries?: number
+      priority?: TaskPriority
+      timeout?: number
     } = {},
   ): Promise<string> {
     const task = await this.manager.createObject()
@@ -211,7 +212,7 @@ export class TaskQueue {
   /**
    * 执行具体任务（模拟）
    */
-  private async performTask(taskData: TaskData): Promise<any> {
+  private async performTask(taskData: TaskData): Promise<null | Record<string, unknown>> {
     console.log(`⚡ 执行任务: ${taskData.type}`)
 
     // 模拟不同类型的任务
@@ -232,7 +233,7 @@ export class TaskQueue {
   /**
    * 邮件发送任务
    */
-  private async sendEmail(payload: { to: string, subject: string, content: string }): Promise<object> {
+  private async sendEmail(payload: { content: string, subject: string, to: string }): Promise<object> {
     console.log(`📧 发送邮件: ${payload.to} - ${payload.subject}`)
 
     // 模拟邮件发送延迟
@@ -253,7 +254,7 @@ export class TaskQueue {
   /**
    * 图片处理任务
    */
-  private async processImage(payload: { sourceUrl: string, operations: string[] }): Promise<object> {
+  private async processImage(payload: { operations: string[], sourceUrl: string }): Promise<object> {
     console.log(`🖼️ 处理图片: ${payload.sourceUrl}`)
 
     // 模拟图片处理时间
@@ -274,7 +275,7 @@ export class TaskQueue {
   /**
    * 数据分析任务
    */
-  private async analyzeData(payload: { dataset: string, analysisType: string }): Promise<object> {
+  private async analyzeData(payload: { analysisType: string, dataset: string }): Promise<object> {
     console.log(`📊 分析数据: ${payload.dataset} - ${payload.analysisType}`)
 
     // 模拟数据分析时间
@@ -290,7 +291,7 @@ export class TaskQueue {
   /**
    * 报告生成任务
    */
-  private async generateReport(payload: { reportType: string, dataRange: string }): Promise<object> {
+  private async generateReport(payload: { dataRange: string, reportType: string }): Promise<object> {
     console.log(`📄 生成报告: ${payload.reportType}`)
 
     // 模拟报告生成时间
@@ -306,8 +307,8 @@ export class TaskQueue {
   /**
    * 通用任务执行
    */
-  private async executeGenericTask(payload: any): Promise<object> {
-    console.log(`⚙️ 执行通用任务:`, payload)
+  private async executeGenericTask(payload: Record<string, unknown>): Promise<object> {
+    console.log('⚙️ 执行通用任务:', payload)
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
@@ -321,7 +322,7 @@ export class TaskQueue {
   /**
    * 任务完成
    */
-  private async completeTask(taskId: string, result: any): Promise<void> {
+  private async completeTask(taskId: string, result: null | Record<string, unknown>): Promise<void> {
     const taskData = this.getTaskData(taskId)
     if (!taskData) {
       return
@@ -456,7 +457,7 @@ export class TaskQueue {
   /**
    * 获取任务状态
    */
-  async getTaskStatus(taskId: string): Promise<TaskData | null> {
+  async getTaskStatus(taskId: string): Promise<null | TaskData> {
     return this.getTaskData(taskId)
   }
 
@@ -476,7 +477,7 @@ export class TaskQueue {
   /**
    * 获取任务数据
    */
-  private getTaskData(_taskId: string): TaskData | null {
+  private getTaskData(_taskId: string): null | TaskData {
     // 这里需要实现查询逻辑，当前简化处理
     return null
   }

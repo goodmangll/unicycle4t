@@ -1,27 +1,28 @@
+/* eslint-disable no-console */
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
 /**
  * 用户权限类型
  */
 export interface UserPermissions {
-  read: boolean
-  write: boolean
   admin: boolean
   custom: string[]
+  read: boolean
+  write: boolean
 }
 
 /**
  * 会话数据
  */
 export interface SessionData {
-  userId: string
-  username: string
   email: string
-  permissions: UserPermissions
-  loginTime: Date
   lastActivity: Date
   loginIP: string
+  loginTime: Date
+  permissions: UserPermissions
   userAgent: string
+  userId: string
+  username: string
 }
 
 /**
@@ -57,24 +58,21 @@ export class WebSessionManager {
    */
   async createSession(
     userId: string,
-    username: string,
-    email: string,
-    permissions: UserPermissions,
-    loginIP: string,
-    userAgent: string,
+    userInfo: { email: string, permissions: UserPermissions, username: string },
+    loginInfo: { loginIP: string, userAgent: string },
   ): Promise<string> {
     const session = await this.manager.createObject()
 
     // 存储会话数据
     const sessionData: SessionData = {
       userId,
-      username,
-      email,
-      permissions,
+      username: userInfo.username,
+      email: userInfo.email,
+      permissions: userInfo.permissions,
       loginTime: new Date(),
       lastActivity: new Date(),
-      loginIP,
-      userAgent,
+      loginIP: loginInfo.loginIP,
+      userAgent: loginInfo.userAgent,
     }
 
     session.setAttribute('sessionData', sessionData)
@@ -99,7 +97,7 @@ export class WebSessionManager {
   /**
    * 获取会话信息
    */
-  async getSession(sessionId: string): Promise<SessionData | null> {
+  async getSession(sessionId: string): Promise<null | SessionData> {
     try {
       const session = await this.manager.getObject(sessionId)
       if (!session || !session.getAttribute('isActive')) {
@@ -184,7 +182,7 @@ export class WebSessionManager {
 
     // 检查基础权限
     if (permission in permissions) {
-      return (permissions as any)[permission]
+      return (permissions as Record<string, boolean>)[permission]
     }
 
     // 检查自定义权限
@@ -281,7 +279,7 @@ export class WebSessionManager {
    */
   private isSessionExpired(sessionData: SessionData): boolean {
     const now = new Date()
-    const lastActivity = sessionData.lastActivity
+    const { lastActivity } = sessionData
     return now.getTime() - lastActivity.getTime() > this.sessionTimeout
   }
 

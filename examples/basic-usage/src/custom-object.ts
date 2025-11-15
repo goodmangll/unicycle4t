@@ -95,7 +95,7 @@ export class Task extends LifecycleObject {
   /**
    * 初始化任务
    */
-  initialize(taskType: string, payload: any): void {
+  initialize(taskType: string, payload: Record<string, unknown>): void {
     const status = 'pending'
     const createdAt = new Date()
     const retryCount = 0
@@ -118,7 +118,7 @@ export class Task extends LifecycleObject {
   /**
    * 完成任务
    */
-  complete(result?: any): void {
+  complete(result?: Record<string, unknown>): void {
     const status = 'completed'
     const completedAt = new Date()
     this.setAttribute('status', status)

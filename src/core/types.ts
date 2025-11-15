@@ -1,6 +1,6 @@
 import type LifecycleObject from './lifecycleObject'
 
-export type ObjectId = string | number
+export type ObjectId = number | string
 
 /**
  * 生命周期状态接口
@@ -28,20 +28,20 @@ export interface LifecycleEventData extends Record<string | symbol, unknown> {
   }
 
   /**
-   * 对象状态变化事件
-   */
-  'object:stateChanged': {
-    object: LifecycleObject
-    oldState: LifecycleState
-    newState: LifecycleState
-    timestamp: Date
-  }
-
-  /**
    * 对象删除事件
    */
   'object:deleted': {
     objectId: ObjectId
+    timestamp: Date
+  }
+
+  /**
+   * 对象状态变化事件
+   */
+  'object:stateChanged': {
+    newState: LifecycleState
+    object: LifecycleObject
+    oldState: LifecycleState
     timestamp: Date
   }
 }

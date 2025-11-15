@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import LifecycleObject from '../../../src/core/lifecycleObject'
 import DefaultLifecycleManager from '../../../src/core/mgt/defaultLifecycleManager'
 

@@ -57,7 +57,7 @@ const sessionId = await sessionManager.createSession(
   'alice@example.com',
   { read: true, write: true, admin: false, custom: ['profile'] },
   '192.168.1.100',
-  'Mozilla/5.0...'
+  'Mozilla/5.0...',
 )
 
 // 更新活动时间
@@ -78,7 +78,7 @@ const newPermissions = {
   read: true,
   write: true,
   admin: true,
-  custom: ['reports', 'analytics']
+  custom: ['reports', 'analytics'],
 }
 await sessionManager.updatePermissions(sessionId, newPermissions)
 ```
@@ -94,7 +94,7 @@ if (sessionData === null) {
 // 定期清理过期会话（自动进行）
 const sessionManager = new WebSessionManager(
   30 * 60 * 1000, // 30分钟会话超时
-  5 * 60 * 1000 // 5分钟清理间隔
+  5 * 60 * 1000, // 5分钟清理间隔
 )
 ```
 
@@ -129,7 +129,7 @@ session.setAttribute('sessionData', {
   userId: 'user123',
   permissions: { read: true, write: true },
   loginTime: new Date(),
-  lastActivity: new Date()
+  lastActivity: new Date(),
 })
 
 // 存储状态标志

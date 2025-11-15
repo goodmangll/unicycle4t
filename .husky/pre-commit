@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 运行提交前代码质量检查..."
+pnpm check
+
+if [ $? -eq 0 ]; then
+    echo "✅ 代码质量检查通过，可以提交"
+    exit 0
+else
+    echo "❌ 代码质量检查失败，请修复问题后重新提交"
+    echo "💡 提示：运行 'pnpm check' 查看具体问题"
+    exit 1
+fi

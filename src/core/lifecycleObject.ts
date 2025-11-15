@@ -1,4 +1,5 @@
 import type { LifecycleState, ObjectId } from './types'
+
 import { LifecycleCreatedState } from './lifecycleState'
 
 /**

@@ -1,16 +1,17 @@
+/* eslint-disable no-console */
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
 /**
  * 缓存项数据
  */
 export interface CacheItem {
-  key: string
-  value: any
-  ttl: number
-  createdAt: Date
-  lastAccessed: Date
   accessCount: number
+  createdAt: Date
+  key: string
+  lastAccessed: Date
   size: number
+  ttl: number
+  value: unknown
 }
 
 /**
@@ -18,22 +19,22 @@ export interface CacheItem {
  */
 interface LRUNode {
   key: string
-  prev: LRUNode | null
   next: LRUNode | null
+  prev: LRUNode | null
 }
 
 /**
  * 缓存统计信息
  */
 export interface CacheStats {
-  totalItems: number
-  totalHits: number
-  totalMisses: number
-  totalEvictions: number
-  hitRate: number
-  memoryUsage: number
-  maxSize: number
   currentSize: number
+  hitRate: number
+  maxSize: number
+  memoryUsage: number
+  totalEvictions: number
+  totalHits: number
+  totalItems: number
+  totalMisses: number
 }
 
 /**
@@ -80,7 +81,7 @@ export class CacheManager {
   /**
    * 设置缓存项
    */
-  async set(key: string, value: any, ttl: number = 300000): Promise<void> { // 默认5分钟TTL
+  async set(key: string, value: unknown, ttl: number = 300000): Promise<void> { // 默认5分钟TTL
     try {
       // 检查是否已存在，如果存在则删除
       if (this.keyToIdMap.has(key)) {
@@ -136,7 +137,7 @@ export class CacheManager {
   /**
    * 获取缓存项
    */
-  async get(key: string): Promise<any> {
+  async get(key: string): Promise<unknown> {
     try {
       const objectId = this.keyToIdMap.get(key)
       if (!objectId) {
@@ -275,8 +276,8 @@ export class CacheManager {
   /**
    * 获取热点数据（访问次数最多的N项）
    */
-  async getHotData(limit: number = 10): Promise<Array<{ key: string, accessCount: number }>> {
-    const hotData: Array<{ key: string, accessCount: number }> = []
+  async getHotData(limit: number = 10): Promise<Array<{ accessCount: number, key: string }>> {
+    const hotData: Array<{ accessCount: number, key: string }> = []
 
     for (const [key, objectId] of this.keyToIdMap) {
       try {
@@ -365,7 +366,7 @@ export class CacheManager {
   /**
    * 计算对象大小（简化计算）
    */
-  private calculateSize(value: any): number {
+  private calculateSize(value: unknown): number {
     try {
       return JSON.stringify(value).length * 2 // 简化计算，假设每个字符2字节
     }
@@ -401,22 +402,23 @@ export class CacheManager {
 
     for (const key of keys) {
       const objectId = this.keyToIdMap.get(key)
-      if (objectId) {
-        try {
-          const cacheItem = await this.manager.getObject(objectId)
-          if (cacheItem) {
-            const itemData = cacheItem.getAttribute('cacheData') as CacheItem
-            if (this.isExpired(itemData)) {
-              await this.expire(key)
-              cleanedCount++
-            }
+      if (!objectId)
+        continue
+
+      try {
+        const cacheItem = await this.manager.getObject(objectId)
+        if (cacheItem) {
+          const itemData = cacheItem.getAttribute('cacheData') as CacheItem
+          if (this.isExpired(itemData)) {
+            await this.expire(key)
+            cleanedCount++
           }
         }
-        catch {
-          // 清理无效项
-          this.keyToIdMap.delete(key)
-          this.removeFromLRU(key)
-        }
+      }
+      catch {
+        // 清理无效项
+        this.keyToIdMap.delete(key)
+        this.removeFromLRU(key)
       }
     }
 

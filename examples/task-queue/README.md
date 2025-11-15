@@ -61,11 +61,11 @@ const taskQueue = new TaskQueue(3) // 最大并发3个任务
 const taskId = await taskQueue.addTask('email', {
   to: 'user@example.com',
   subject: 'Welcome',
-  content: 'Hello World!'
+  content: 'Hello World!',
 }, {
   priority: TaskPriority.HIGH,
   maxRetries: 3,
-  timeout: 30000
+  timeout: 30000,
 })
 ```
 
@@ -84,10 +84,10 @@ await taskQueue.addTask('security-alert', {}, { priority: TaskPriority.URGENT })
 // 创建依赖链
 const collectId = await taskQueue.addTask('data-collection', {})
 const processId = await taskQueue.addTask('data-processing', {}, {
-  dependencies: [collectId] // 等待数据收集完成
+  dependencies: [collectId], // 等待数据收集完成
 })
 const reportId = await taskQueue.addTask('report-generation', {}, {
-  dependencies: [processId] // 等待数据处理完成
+  dependencies: [processId], // 等待数据处理完成
 })
 ```
 
@@ -96,7 +96,7 @@ const reportId = await taskQueue.addTask('report-generation', {}, {
 // 配置重试策略
 const taskId = await taskQueue.addTask('unreliable-task', {}, {
   maxRetries: 5, // 最多重试5次
-  timeout: 10000 // 10秒超时
+  timeout: 10000, // 10秒超时
 })
 
 // 监听任务状态
@@ -130,7 +130,7 @@ task.setAttribute('taskData', {
   payload: { to: 'user@example.com' },
   priority: TaskPriority.HIGH,
   retryCount: 0,
-  status: TaskStatus.PENDING
+  status: TaskStatus.PENDING,
 })
 ```
 
@@ -180,7 +180,7 @@ console.log({
   totalCompleted: stats.totalCompleted,
   totalFailed: stats.totalFailed,
   currentTaskCount: stats.currentTaskCount,
-  queuedTasks: stats.queuedTasks
+  queuedTasks: stats.queuedTasks,
 })
 ```
 

@@ -1,9 +1,11 @@
 import type { Emitter } from 'mitt'
+
 import type LifecycleDao from '../dao/lifecycleDao'
 import type LifecycleIdGenerator from '../dao/lifecycleIdGenerator'
 import type LifecycleFactory from '../lifecycleFactory'
 import type LifecycleObject from '../lifecycleObject'
 import type { LifecycleEventData, LifecycleState, ObjectId } from '../types'
+
 import type LifecycleManager from './lifecycleManager'
 import mitt from 'mitt'
 import { MemoryLifecycleDao } from '../dao/memoryLifecycleDao'
@@ -100,7 +102,7 @@ export default class DefaultLifecycleManager implements LifecycleManager {
    * @param idOrObject 对象ID或生命周期对象
    * @param state 目标状态
    */
-  protected async changeState(idOrObject: ObjectId | LifecycleObject, state: LifecycleState): Promise<void> {
+  protected async changeState(idOrObject: LifecycleObject | ObjectId, state: LifecycleState): Promise<void> {
     let object: LifecycleObject | null
     if (typeof idOrObject === 'object') {
       // 如果是 LifecycleObject 类型

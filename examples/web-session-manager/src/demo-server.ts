@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import type { UserPermissions } from './session-manager.js'
+
 import { WebSessionManager } from './session-manager.js'
 
 /**
@@ -21,29 +23,26 @@ export class DemoWebServer {
    */
   async simulateLogin(
     userId: string,
-    username: string,
-    email: string,
-    permissions: UserPermissions,
-    ip: string = '127.0.0.1',
-    userAgent: string = 'Demo-Browser/1.0',
-  ): Promise<string | null> {
-    console.log(`\n🔐 模拟用户登录: ${username} (${userId})`)
+    userInfo: { email: string, permissions: UserPermissions, username: string },
+    connectionInfo: { ip: string, userAgent: string } = { ip: '127.0.0.1', userAgent: 'Demo-Browser/1.0' },
+  ): Promise<null | string> {
+    console.log(`\n🔐 模拟用户登录: ${userInfo.username} (${userId})`)
 
     try {
       const sessionId = await this.sessionManager.createSession(
         userId,
-        username,
-        email,
-        permissions,
-        ip,
-        userAgent,
+        userInfo.username,
+        userInfo.email,
+        userInfo.permissions,
+        connectionInfo.ip,
+        connectionInfo.userAgent,
       )
 
       console.log(`✅ 登录成功，会话ID: ${sessionId}`)
       return sessionId
     }
     catch (error) {
-      console.error(`❌ 登录失败:`, error.message)
+      console.error('❌ 登录失败:', error.message)
       return null
     }
   }
@@ -151,7 +150,7 @@ export class DemoWebServer {
    */
   showSessionStats(): void {
     console.log('\n📊 会话统计信息:')
-    const stats = this.sessionManager.getStats() as any
+    const stats = this.sessionManager.getStats() as { activeCount: number, totalCreated: number, totalExpired: number }
     console.log(`📦 总创建数: ${stats.totalCreated}`)
     console.log(`⏰ 总过期数: ${stats.totalExpired}`)
     console.log(`🟢 活跃会话数: ${stats.activeCount}`)
@@ -170,21 +169,27 @@ export class DemoWebServer {
     const users = [
       {
         userId: 'user001',
-        username: 'alice',
-        email: 'alice@example.com',
-        permissions: { read: true, write: true, admin: false, custom: ['profile'] } as UserPermissions,
+        userInfo: {
+          username: 'alice',
+          email: 'alice@example.com',
+          permissions: { read: true, write: true, admin: false, custom: ['profile'] } as UserPermissions,
+        },
       },
       {
         userId: 'user002',
-        username: 'bob',
-        email: 'bob@example.com',
-        permissions: { read: true, write: false, admin: false, custom: [] } as UserPermissions,
+        userInfo: {
+          username: 'bob',
+          email: 'bob@example.com',
+          permissions: { read: true, write: false, admin: false, custom: [] } as UserPermissions,
+        },
       },
       {
         userId: 'admin001',
-        username: 'admin',
-        email: 'admin@example.com',
-        permissions: { read: true, write: true, admin: true, custom: ['system'] } as UserPermissions,
+        userInfo: {
+          username: 'admin',
+          email: 'admin@example.com',
+          permissions: { read: true, write: true, admin: true, custom: ['system'] } as UserPermissions,
+        },
       },
     ]
 
@@ -194,11 +199,8 @@ export class DemoWebServer {
     for (const user of users) {
       const sessionId = await this.simulateLogin(
         user.userId,
-        user.username,
-        user.email,
-        user.permissions,
-        '192.168.1.100',
-        'Mozilla/5.0 Demo Browser',
+        user.userInfo,
+        { ip: '192.168.1.100', userAgent: 'Mozilla/5.0 Demo Browser' },
       )
 
       if (sessionId) {

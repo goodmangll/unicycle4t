@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { LifecycleError } from '../../src/core/errors'
 
 describe('lifecycleError', () => {

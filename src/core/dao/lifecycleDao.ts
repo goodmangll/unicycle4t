@@ -15,6 +15,12 @@ export default interface LifecycleDao {
   create: (object: LifecycleObject) => Promise<void>
 
   /**
+   * 删除对象
+   * @param id 对象ID
+   */
+  delete: (id: ObjectId) => Promise<void>
+
+  /**
    * 获取对象
    * @param id 对象ID
    */
@@ -25,11 +31,5 @@ export default interface LifecycleDao {
    * @param object 生命周期对象
    */
   update: (object: LifecycleObject) => Promise<void>
-
-  /**
-   * 删除对象
-   * @param id 对象ID
-   */
-  delete: (id: ObjectId) => Promise<void>
 
 }

@@ -1,5 +1,8 @@
+/* eslint-disable no-console */
 import process from 'node:process'
+
 import { DefaultLifecycleManager } from '@linden/unicycle4t'
+
 import { Task, UserSession } from './custom-object.js'
 import { SimpleUsage } from './simple-manager.js'
 

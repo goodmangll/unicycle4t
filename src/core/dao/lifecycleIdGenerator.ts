@@ -1,5 +1,8 @@
 import type LifecycleObject from '../lifecycleObject'
 
+/**
+ * 生命周期ID生成器接口
+ */
 export default interface LifecycleIdGenerator {
 
   /**

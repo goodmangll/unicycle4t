@@ -1,5 +1,7 @@
 import type { LifecycleState } from '../../src/core/types'
+
 import { describe, expect, it, vi } from 'vitest'
+
 import DefaultLifecycleManager from '../../src/core/mgt/defaultLifecycleManager'
 
 // 自定义状态：暂停状态
