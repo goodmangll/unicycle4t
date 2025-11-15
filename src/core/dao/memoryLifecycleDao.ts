@@ -14,7 +14,7 @@ export class MemoryLifecycleDao implements LifecycleDao {
   }
 
   public create = async (object: LifecycleObject): Promise<void> => {
-    this.storage.set(object.getId(), object)
+    this.storage.set(object.id, object)
   }
 
   public get = async (id: ObjectId): Promise<LifecycleObject | null> => {
@@ -22,7 +22,7 @@ export class MemoryLifecycleDao implements LifecycleDao {
   }
 
   public update = async (object: LifecycleObject): Promise<void> => {
-    this.storage.set(object.getId(), object)
+    this.storage.set(object.id, object)
   }
 
   public delete = async (id: ObjectId): Promise<void> => {

@@ -11,8 +11,8 @@ describe('memoryLifecycleDao', () => {
   beforeEach(() => {
     dao = new MemoryLifecycleDao()
     object = new LifecycleObject()
-    object.setId('test-id-1')
-    object.setState(new LifecycleStartedState())
+    object.id = 'test-id-1'
+    object.state = new LifecycleStartedState()
   })
 
   describe('create', () => {
@@ -25,7 +25,7 @@ describe('memoryLifecycleDao', () => {
 
     it('创建多个对象应该都能存储', async () => {
       const object2 = new LifecycleObject()
-      object2.setId('test-id-2')
+      object2.id = 'test-id-2'
 
       await dao.create(object)
       await dao.create(object2)
@@ -38,7 +38,7 @@ describe('memoryLifecycleDao', () => {
       await dao.create(object)
 
       const object2 = new LifecycleObject()
-      object2.setId('test-id-1')
+      object2.id = 'test-id-1'
       object2.setAttribute('updated', true)
 
       await dao.create(object2)
@@ -55,7 +55,7 @@ describe('memoryLifecycleDao', () => {
       const retrieved = await dao.get('test-id-1')
 
       expect(retrieved).toBe(object)
-      expect(retrieved?.getId()).toBe('test-id-1')
+      expect(retrieved?.id).toBe('test-id-1')
     })
 
     it('获取不存在的对象应该返回 null', async () => {
@@ -65,13 +65,13 @@ describe('memoryLifecycleDao', () => {
 
     it('应该支持数字类型的ID', async () => {
       const objWithNumberId = new LifecycleObject()
-      objWithNumberId.setId(123)
+      objWithNumberId.id = 123
 
       await dao.create(objWithNumberId)
 
       const retrieved = await dao.get(123)
       expect(retrieved).toBe(objWithNumberId)
-      expect(retrieved?.getId()).toBe(123)
+      expect(retrieved?.id).toBe(123)
     })
   })
 
@@ -124,7 +124,7 @@ describe('memoryLifecycleDao', () => {
       await dao.delete('test-id-1')
 
       const newObject = new LifecycleObject()
-      newObject.setId('test-id-1')
+      newObject.id = 'test-id-1'
       await dao.create(newObject)
 
       const retrieved = await dao.get('test-id-1')
@@ -136,7 +136,7 @@ describe('memoryLifecycleDao', () => {
     it('应该支持并发创建多个对象', async () => {
       const objects = Array.from({ length: 10 }, (_, i) => {
         const obj = new LifecycleObject()
-        obj.setId(`id-${i}`)
+        obj.id = `id-${i}`
         return obj
       })
 

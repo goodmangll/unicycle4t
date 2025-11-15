@@ -10,27 +10,27 @@ export default class LifecycleObject {
   /**
    * 对象唯一标识
    */
-  protected id!: ObjectId
+  public id!: ObjectId
 
   /**
    * 当前状态
    */
-  protected currentState: LifecycleState
+  public state: LifecycleState
 
   /**
    * 创建时间
    */
-  protected readonly createdAt: Date
+  public readonly createdAt: Date
 
   /**
    * 最后更新时间
    */
-  protected updatedAt: Date
+  public updatedAt: Date
 
   /**
    * 自定义属性
    */
-  protected attributes: Map<string, unknown> = new Map()
+  protected readonly _attributes: Map<string, unknown> = new Map()
 
   /**
    * 构造函数
@@ -38,46 +38,70 @@ export default class LifecycleObject {
   constructor() {
     this.createdAt = new Date()
     this.updatedAt = this.createdAt // 使用同一个Date对象，确保时间一致
-    this.currentState = new LifecycleCreatedState()
+    this.state = new LifecycleCreatedState()
+  }
+
+  // ========== 类型安全的属性操作 ==========
+
+  /**
+   * 获取属性值（支持泛型类型推断）
+   */
+  public getAttribute<T = unknown>(key: string): T | undefined {
+    return this._attributes.get(key) as T | undefined
   }
 
   /**
-   * 获取对象ID
+   * 设置属性值（支持泛型类型安全，支持链式调用）
    */
-  public getId(): ObjectId {
-    return this.id
-  }
-
-  public setId(id: ObjectId): void {
-    this.id = id
-  }
-
-  public setAttribute(key: string, value: unknown): void {
-    this.attributes.set(key, value)
-  }
-
-  public getAttribute(key: string): unknown {
-    return this.attributes.get(key)
-  }
-
-  public removeAttribute(key: string): void {
-    this.attributes.delete(key)
-  }
-
-  public getState(): LifecycleState {
-    return this.currentState
-  }
-
-  public getCreatedAt(): Date {
-    return this.createdAt
-  }
-
-  public getUpdatedAt(): Date {
-    return this.updatedAt
-  }
-
-  public setState(newState: LifecycleState): void {
-    this.currentState = newState
+  public setAttribute<T>(key: string, value: T): this {
+    this._attributes.set(key, value)
     this.updatedAt = new Date()
+    return this
+  }
+
+  /**
+   * 检查属性是否存在
+   */
+  public hasAttribute(key: string): boolean {
+    return this._attributes.has(key)
+  }
+
+  /**
+   * 删除属性
+   */
+  public deleteAttribute(key: string): boolean {
+    const deleted = this._attributes.delete(key)
+    if (deleted) {
+      this.updatedAt = new Date()
+    }
+    return deleted
+  }
+
+  /**
+   * 获取所有属性（防御性复制）
+   */
+  public getAttributes(): ReadonlyMap<string, unknown> {
+    return new Map(this._attributes)
+  }
+
+  /**
+   * 批量设置属性（支持链式调用）
+   */
+  public setAttributes(attributes: Record<string, unknown>): this {
+    for (const [key, value] of Object.entries(attributes)) {
+      this._attributes.set(key, value)
+    }
+    this.updatedAt = new Date()
+    return this
+  }
+
+  /**
+   * 要求属性存在，否则抛出异常
+   */
+  public requireAttribute<T>(key: string): T {
+    if (!this._attributes.has(key)) {
+      throw new Error(`Required attribute '${key}' not found`)
+    }
+    return this.getAttribute<T>(key)!
   }
 }

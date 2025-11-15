@@ -78,19 +78,19 @@ import DefaultLifecycleManager from '@linden/unicycle4t'
 const manager = new DefaultLifecycleManager()
 
 // 创建新的生命周期对象
-const object = await manager.createObject()
+const object = await manager.create()
 
 // 启动对象
-await manager.startObject(object.getId())
+await manager.start(object.id)
 
 // 获取对象
-const retrievedObject = await manager.getObject(object.getId())
+const retrievedObject = await manager.get(object.id)
 
 // 停止对象
-await manager.stopObject(object.getId())
+await manager.stop(object.id)
 
 // 删除对象
-await manager.deleteObject(object.getId())
+await manager.delete(object.id)
 ```
 
 ### 事件监听
@@ -98,7 +98,7 @@ await manager.deleteObject(object.getId())
 ```typescript
 // 监听对象创建事件
 manager.events.on('object:created', (data) => {
-  console.log('对象已创建:', data.object.getId())
+  console.log('对象已创建:', data.object.id)
 })
 
 // 监听对象删除事件
@@ -162,11 +162,11 @@ ID生成器，负责为生命周期对象生成唯一标识符。UuidLifecycleId
 
 | API | 用途 | 示例场景 |
 |-----|------|---------|
-| `createObject()` | 创建新对象 | 用户注册、任务创建 |
-| `getObject(id)` | 获取对象 | 状态查询、数据获取 |
-| `startObject(id)` | 启动对象 | 服务启动、任务执行 |
-| `stopObject(id)` | 停止对象 | 服务停止、任务暂停 |
-| `deleteObject(id)` | 删除对象 | 用户注销、任务清理 |
+| `create()` | 创建新对象 | 用户注册、任务创建 |
+| `get(id)` | 获取对象 | 状态查询、数据获取 |
+| `start(id)` | 启动对象 | 服务启动、任务执行 |
+| `stop(id)` | 停止对象 | 服务停止、任务暂停 |
+| `delete(id)` | 删除对象 | 用户注销、任务清理 |
 
 ### 核心类说明
 
@@ -178,20 +178,20 @@ const manager = new DefaultLifecycleManager()
 
 // 监听事件
 manager.events.on('object:created', ({ object }) => {
-  console.log(`对象已创建: ${object.getId()}`)
+  console.log(`对象已创建: ${object.id}`)
 })
 
 // 创建和管理对象
-const object = await manager.createObject()
-await manager.startObject(object.getId())
+const object = await manager.create()
+await manager.start(object.id)
 ```
 
 **LifecycleObject** - 生命周期对象基类
 ```typescript
 // 属性操作
-object.setProperty('config', { timeout: 5000 })
-const config = object.getProperty('config')
-const hasConfig = object.hasProperty('config')
+object.setAttribute('config', { timeout: 5000 })
+const config = object.getAttribute('config')
+const hasConfig = object.hasAttribute('config')
 ```
 
 **MemoryLifecycleDao** - 默认内存存储
@@ -267,8 +267,8 @@ class CustomLifecycleObject extends LifecycleObject {
 
   // 初始化业务数据
   initialize(data: any) {
-    this.setProperty('businessData', data)
-    this.setProperty('metadata', {
+    this.setAttribute('businessData', data)
+    this.setAttribute('metadata', {
       createdAt: this.createdAt,
       updatedAt: new Date()
     })
@@ -276,12 +276,12 @@ class CustomLifecycleObject extends LifecycleObject {
 
   // 获取业务数据
   getBusinessData() {
-    return this.getProperty('businessData')
+    return this.getAttribute('businessData')
   }
 
   // 获取元数据
   getMetadata() {
-    return this.getProperty('metadata')
+    return this.getAttribute('metadata')
   }
 
   // 自定义服务方法
@@ -300,7 +300,7 @@ class CustomLifecycleFactory extends DefaultLifecycleFactory {
 
 // 使用自定义工厂
 const manager = new DefaultLifecycleManager(new CustomLifecycleFactory())
-const object = await manager.createObject()
+const object = await manager.create()
 
 // 初始化并使用
 object.initialize({ userId: '123', permissions: ['read', 'write'] })
@@ -332,8 +332,8 @@ class LocalStorageLifecycleDao implements LifecycleDao {
   // 序列化：将对象转换为可存储格式
   private serializeObject(object: LifecycleObject): any {
     return {
-      id: object.getId(),
-      state: object.getState().name,
+      id: object.id,
+      state: object.state.name,
       properties: this.extractProperties(object),
       timestamp: Date.now()
     }
@@ -342,15 +342,15 @@ class LocalStorageLifecycleDao implements LifecycleDao {
   // 反序列化：从存储数据重建对象
   private deserializeObject(data: any): LifecycleObject {
     const object = new LifecycleObject()
-    object.setId(data.id)
+    object.id = data.id
 
     // 恢复状态
     const state = this.createStateByName(data.state)
-    object.setState(state)
+    object.state = state
 
     // 恢复属性
     Object.entries(data.properties || {}).forEach(([key, value]) => {
-      object.setProperty(key, value)
+      object.setAttribute(key, value)
     })
 
     return object
@@ -362,8 +362,8 @@ class LocalStorageLifecycleDao implements LifecycleDao {
     // 提取已知的业务属性
     const businessKeys = ['userData', 'config', 'metadata', 'businessData']
     businessKeys.forEach((key) => {
-      if (object.hasProperty(key)) {
-        properties[key] = object.getProperty(key)
+      if (object.hasAttribute(key)) {
+        properties[key] = object.getAttribute(key)
       }
     })
 
@@ -383,9 +383,9 @@ class LocalStorageLifecycleDao implements LifecycleDao {
   async create(object: LifecycleObject): Promise<void> {
     const storage = this.getStorage()
     const serialized = this.serializeObject(object)
-    storage[object.getId()] = serialized
+    storage[object.id] = serialized
     this.setStorage(storage)
-    console.log(`✅ 对象已保存: ${object.getId()}`)
+    console.log(`✅ 对象已保存: ${object.id}`)
   }
 
   async get(id: ObjectId): Promise<LifecycleObject | null> {
@@ -419,9 +419,9 @@ const customDao = new LocalStorageLifecycleDao()
 const manager = new DefaultLifecycleManager(undefined, customDao)
 
 // 数据将自动保存到 LocalStorage
-const object = await manager.createObject()
-object.setProperty('userData', { name: 'Alice', theme: 'dark' })
-await manager.startObject(object.getId()) // 状态变更也会持久化
+const object = await manager.create()
+object.setAttribute('userData', { name: 'Alice', theme: 'dark' })
+await manager.start(object.id) // 状态变更也会持久化
 ```
 
 ---

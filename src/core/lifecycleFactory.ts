@@ -7,9 +7,10 @@ export default interface LifecycleFactory {
 
   /**
    * 创建生命周期对象
+   * @param initialAttributes 初始属性
    * @returns 生命周期对象实例
    */
-  create: () => Promise<LifecycleObject>
+  create: (initialAttributes?: Record<string, unknown>) => Promise<LifecycleObject>
 }
 
 /**

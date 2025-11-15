@@ -13,57 +13,58 @@ describe('lifecycleObject', () => {
   describe('基础属性', () => {
     it('应该正确初始化创建时间', () => {
       const now = new Date()
-      expect(object.getCreatedAt()).toBeInstanceOf(Date)
-      expect(object.getCreatedAt().getTime()).toBeLessThanOrEqual(now.getTime())
+      expect(object.createdAt).toBeInstanceOf(Date)
+      expect(object.createdAt.getTime()).toBeLessThanOrEqual(now.getTime())
     })
 
     it('应该正确初始化更新时间', () => {
-      expect(object.getUpdatedAt()).toBeInstanceOf(Date)
-      expect(object.getUpdatedAt()).toEqual(object.getCreatedAt())
+      expect(object.updatedAt).toBeInstanceOf(Date)
+      expect(object.updatedAt).toEqual(object.createdAt)
     })
   })
 
   describe('iD 管理', () => {
     it('应该能够设置和获取 ID（字符串）', () => {
-      object.setId('test-id-123')
-      expect(object.getId()).toBe('test-id-123')
+      object.id = 'test-id-123'
+      expect(object.id).toBe('test-id-123')
     })
 
     it('应该能够设置和获取 ID（数字）', () => {
-      object.setId(123)
-      expect(object.getId()).toBe(123)
+      object.id = 123
+      expect(object.id).toBe(123)
     })
   })
 
   describe('状态管理', () => {
     it('应该能够设置和获取状态', () => {
       const startedState = new LifecycleStartedState()
-      object.setState(startedState)
+      object.state = startedState
 
-      expect(object.getState()).toBe(startedState)
-      expect(object.getState().name).toBe('started')
+      expect(object.state).toBe(startedState)
+      expect(object.state.name).toBe('started')
     })
 
-    it('设置状态应该更新 updatedAt 时间', async () => {
-      const oldUpdatedAt = object.getUpdatedAt()
-
-      // 等待 1ms 确保时间变化
-      await new Promise(resolve => setTimeout(resolve, 1))
-
-      object.setState(new LifecycleStartedState())
-
-      expect(object.getUpdatedAt().getTime()).toBeGreaterThan(oldUpdatedAt.getTime())
-    })
+    // 注释：不再要求状态变更自动更新updatedAt时间，因为用户认为这个副作用不需要
+    // it('设置状态应该更新 updatedAt 时间', async () => {
+    //   const oldUpdatedAt = object.updatedAt
+    //
+    //   // 等待 1ms 确保时间变化
+    //   await new Promise(resolve => setTimeout(resolve, 1))
+    //
+    //   object.state = new LifecycleStartedState()
+    //
+    //   expect(object.updatedAt.getTime()).toBeGreaterThan(oldUpdatedAt.getTime())
+    // })
 
     it('应该能够切换不同的状态', () => {
       const startedState = new LifecycleStartedState()
       const stoppedState = new LifecycleStoppedState()
 
-      object.setState(startedState)
-      expect(object.getState().name).toBe('started')
+      object.state = startedState
+      expect(object.state.name).toBe('started')
 
-      object.setState(stoppedState)
-      expect(object.getState().name).toBe('stopped')
+      object.state = stoppedState
+      expect(object.state.name).toBe('stopped')
     })
   })
 
@@ -91,7 +92,7 @@ describe('lifecycleObject', () => {
       object.setAttribute('key1', 'value1')
       expect(object.getAttribute('key1')).toBe('value1')
 
-      object.removeAttribute('key1')
+      object.deleteAttribute('key1')
       expect(object.getAttribute('key1')).toBeUndefined()
     })
 

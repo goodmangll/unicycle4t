@@ -35,10 +35,11 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     this.idGenerator = idGenerator ?? new UuidLifecycleIdGenerator()
   }
 
-  public async createObject(): Promise<LifecycleObject> {
-    const object = await this.factory.create()
+  public async create(initialAttributes?: Record<string, unknown>): Promise<LifecycleObject> {
+    const object = await this.factory.create(initialAttributes)
     const id = this.idGenerator.generate(object)
-    object.setId(id)
+    object.id = id
+
     await this.dao.create(object)
 
     // 发射对象创建事件
@@ -50,27 +51,27 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     return object
   }
 
-  public async getObject(id: ObjectId): Promise<LifecycleObject | null> {
+  public async get(id: ObjectId): Promise<LifecycleObject | null> {
     return await this.dao.get(id)
   }
 
-  public async startObject(id: ObjectId): Promise<void> {
+  public async start(id: ObjectId): Promise<void> {
     await this.changeState(id, new LifecycleStartedState())
   }
 
-  public async stopObject(id: ObjectId): Promise<void> {
+  public async stop(id: ObjectId): Promise<void> {
     await this.changeState(id, new LifecycleStoppedState())
   }
 
-  public async deleteObject(id: ObjectId): Promise<void> {
+  public async delete(id: ObjectId): Promise<void> {
     // 先获取对象，检查其当前状态
-    const object = await this.getObject(id)
+    const object = await this.get(id)
 
     if (object) {
       // 如果对象不是停止状态，则先停止它（包括从created状态转换）
-      const currentState = object.getState()
+      const currentState = object.state
       if (currentState.name !== 'stopped') {
-        await this.stopObject(id)
+        await this.stop(id)
       }
     }
 
@@ -111,15 +112,15 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     }
     else {
       // 如果是 ObjectId 类型（string 或 number）
-      object = await this.getObject(idOrObject)
+      object = await this.get(idOrObject)
     }
 
     if (!object) {
-      throw new LifecycleError(`Lifecycle object not found: ${typeof idOrObject === 'object' ? idOrObject.getId() : idOrObject}`)
+      throw new LifecycleError(`Lifecycle object not found: ${typeof idOrObject === 'object' ? idOrObject.id : idOrObject}`)
     }
 
-    const oldState = object.getState()
-    object.setState(state)
+    const oldState = object.state
+    object.state = state
     await this.onChange(object)
 
     // 发射状态变化事件

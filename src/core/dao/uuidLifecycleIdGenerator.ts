@@ -1,6 +1,6 @@
 import type LifecycleObject from '../lifecycleObject'
-import type { ObjectId } from '../types'
 
+import type { ObjectId } from '../types'
 import type LifecycleIdGenerator from './lifecycleIdGenerator'
 import { v4 as uuidv4 } from 'uuid'
 
