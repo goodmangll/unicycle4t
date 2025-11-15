@@ -13,19 +13,19 @@ export class MemoryLifecycleDao implements LifecycleDao {
     this.storage = new Map()
   }
 
-  public async create(object: LifecycleObject): Promise<void> {
+  public create = async (object: LifecycleObject): Promise<void> => {
     this.storage.set(object.getId(), object)
   }
 
-  public async get(id: ObjectId): Promise<LifecycleObject | null> {
+  public get = async (id: ObjectId): Promise<LifecycleObject | null> => {
     return this.storage.get(id) ?? null
   }
 
-  public async update(object: LifecycleObject): Promise<void> {
+  public update = async (object: LifecycleObject): Promise<void> => {
     this.storage.set(object.getId(), object)
   }
 
-  public async delete(id: ObjectId): Promise<void> {
+  public delete = async (id: ObjectId): Promise<void> => {
     this.storage.delete(id)
   }
 }

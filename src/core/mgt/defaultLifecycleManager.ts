@@ -37,7 +37,8 @@ export default class DefaultLifecycleManager implements LifecycleManager {
 
   public async createObject(): Promise<LifecycleObject> {
     const object = await this.factory.create()
-    object.setId(this.idGenerator.generate(object))
+    const id = this.idGenerator.generate(object)
+    object.setId(id)
     await this.dao.create(object)
 
     // 发射对象创建事件
@@ -130,7 +131,7 @@ export default class DefaultLifecycleManager implements LifecycleManager {
     })
   }
 
-  protected async onChange(object: LifecycleObject) {
-    this.dao.update(object)
+  protected async onChange(object: LifecycleObject): Promise<void> {
+    await this.dao.update(object)
   }
 }

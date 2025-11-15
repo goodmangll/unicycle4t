@@ -1,4 +1,5 @@
 import type LifecycleObject from '../lifecycleObject'
+import type { ObjectId } from '../types'
 
 import type LifecycleIdGenerator from './lifecycleIdGenerator'
 import { v4 as uuidv4 } from 'uuid'
@@ -9,7 +10,5 @@ import { v4 as uuidv4 } from 'uuid'
  * @author linden
  */
 export default class UuidLifecycleIdGenerator implements LifecycleIdGenerator {
-  generate(_lifecycleObject: LifecycleObject): string {
-    return uuidv4()
-  }
+  generate = (_lifecycleObject: LifecycleObject): ObjectId => uuidv4()
 }

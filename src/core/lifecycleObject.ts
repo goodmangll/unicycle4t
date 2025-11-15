@@ -37,7 +37,7 @@ export default class LifecycleObject {
    */
   constructor() {
     this.createdAt = new Date()
-    this.updatedAt = new Date()
+    this.updatedAt = this.createdAt // 使用同一个Date对象，确保时间一致
     this.currentState = new LifecycleCreatedState()
   }
 

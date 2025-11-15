@@ -6,6 +6,16 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "strict": true,
+
+    "exactOptionalPropertyTypes": true, // 精确的可选属性类型
+    // 新增的严格配置 - 基于 Effective TypeScript 最佳实践
+    "noImplicitAny": true, // 禁止隐式any
+    "noImplicitOverride": true, // 显式覆盖标记
+    "noImplicitReturns": true, // 所有路径都要返回值
+    "noImplicitThis": true, // 禁止this的隐式any类型
+    "noUncheckedIndexedAccess": true, // 检查索引访问
+    "noUnusedLocals": true, // 检查未使用的局部变量
+    "noUnusedParameters": true, // 检查未使用的参数
     "declaration": true,
     "outDir": "dist",
     "sourceMap": true,

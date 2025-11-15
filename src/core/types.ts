@@ -1,4 +1,5 @@
 import type LifecycleObject from './lifecycleObject'
+import type { LifecycleCreatedState, LifecycleStartedState, LifecycleStoppedState } from './lifecycleState'
 
 export type ObjectId = number | string
 
@@ -15,33 +16,63 @@ export interface LifecycleState {
 }
 
 /**
- * 生命周期事件类型定义
- * 定义所有生命周期相关的事件及其数据结构
+ * 事件类型定义
  */
-export interface LifecycleEventData extends Record<string | symbol, unknown> {
-  /**
-   * 对象创建事件
-   */
-  'object:created': {
-    object: LifecycleObject
-    timestamp: Date
-  }
+export type EventType =
+  | 'object:created'
+  | 'object:deleted'
+  | 'object:stateChanged'
 
-  /**
-   * 对象删除事件
-   */
-  'object:deleted': {
-    objectId: ObjectId
-    timestamp: Date
-  }
-
-  /**
-   * 对象状态变化事件
-   */
-  'object:stateChanged': {
-    newState: LifecycleState
-    object: LifecycleObject
-    oldState: LifecycleState
-    timestamp: Date
-  }
+/**
+ * 对象创建事件数据
+ */
+export interface ObjectCreatedEvent {
+  readonly object: LifecycleObject
+  readonly timestamp: Date
 }
+
+/**
+ * 对象删除事件数据
+ */
+export interface ObjectDeletedEvent {
+  readonly objectId: ObjectId
+  readonly timestamp: Date
+}
+
+/**
+ * 对象状态变化事件数据
+ */
+export interface ObjectStateChangedEvent {
+  readonly object: LifecycleObject
+  readonly oldState: LifecycleState
+  readonly newState: LifecycleState
+  readonly timestamp: Date
+}
+
+/**
+ * 生命周期事件数据映射
+ */
+export type LifecycleEventData = {
+  readonly [K in EventType]:
+    | (K extends 'object:created' ? ObjectCreatedEvent : never)
+    | (K extends 'object:deleted' ? ObjectDeletedEvent : never)
+    | (K extends 'object:stateChanged' ? ObjectStateChangedEvent : never)
+} & Record<string, unknown>
+
+/**
+ * 状态转换映射类型
+ */
+export interface StateTransition<S extends LifecycleState, T extends LifecycleState> {
+  readonly from: S
+  readonly to: T
+  readonly object: LifecycleObject
+  readonly timestamp: Date
+}
+
+/**
+ * 有效的状态转换类型
+ */
+export type LifecycleStateTransitions =
+  | StateTransition<LifecycleCreatedState, LifecycleStartedState>
+  | StateTransition<LifecycleStartedState, LifecycleStoppedState>
+  | StateTransition<LifecycleStoppedState, LifecycleCreatedState>
