@@ -41,12 +41,13 @@ Unicycle4T 是一个轻量级、灵活的 **TypeScript 生命周期管理框架*
 
 **新用户必读**：[快速开始](#-快速开始) → [基础示例](#-示例代码)
 
-**开发指南**：[API文档](#-api文档) → [贡献指南](#-开发与贡献)
+**开发指南**：[API文档](#-api文档) → [自定义事件发送](#-自定义事件发送) → [第三方服务集成](#-第三方服务集成) → [贡献指南](#-开发与贡献)
 
 **完整目录**
 - [特性与安装](#✨-特性)
 - [核心概念](#-核心概念)
 - [详细文档](#-api文档)
+- [自定义事件发送](#-自定义事件发送)
 - [示例项目](#-示例项目)
 - [开发贡献](#-开发与贡献)
 
@@ -301,9 +302,56 @@ class MemoryLifecycleDao implements LifecycleDao {
 
 **存储层特性：**
 - **内存存储**：数据保存在内存中，重启后丢失
-- **高性能**：无IO操作，读写速度���快
+- **高性能**：无IO操作，读写速度极快
 - **线程安全**：内置Map结构，支持并发访问
 - **开发友好**：适合原型开发和单元测试
+
+---
+
+## 🔌 自定义事件发送
+
+Unicycle4T 支持你发送自定义事件到第三方服务，扩展框架的事件能力。
+
+```typescript
+import { DefaultLifecycleManager } from '@linden/unicycle4t'
+
+const manager = new DefaultLifecycleManager()
+
+// 发送自定义业务事件
+manager.events.emit('user:login', {
+  userId: '123',
+  sessionId: 'abc-123',
+  timestamp: new Date()
+})
+
+// 发送自定义错误事件
+manager.events.emit('error:occurred', {
+  errorType: 'ValidationError',
+  message: 'Invalid user input',
+  objectId: 'obj-456',
+  timestamp: new Date()
+})
+
+// 发送自定义性能事件
+manager.events.emit('performance:metric', {
+  metricName: 'response_time',
+  value: 250,
+  unit: 'ms',
+  timestamp: new Date()
+})
+
+// 监听自定义事件并发送到第三方服务
+manager.events.on('*', (eventType, data) => {
+  // 过滤并发送自定义事件
+  if (eventType.includes(':') && eventType !== 'object:created') {
+    sendToThirdParty({
+      event: eventType,
+      data: data,
+      timestamp: new Date()
+    })
+  }
+})
+```
 
 ---
 
@@ -483,17 +531,6 @@ const object = await manager.createObject()
 object.setProperty('userData', { name: 'Alice', theme: 'dark' })
 await manager.startObject(object.getId()) // 状态变更也会持久化
 ```
-    object.setId(data.id)
-    object.setState(data.state)
-
-    // 恢复属性
-    if (data.properties) {
-      Object.entries(data.properties).forEach(([key, value]) => {
-        object.setProperty(key, value)
-      })
-    }
-
-    return object
   }
 
   async create(object: LifecycleObject): Promise<void> {
@@ -554,7 +591,7 @@ pnpm test:coverage
 
 ### 📁 项目结构
 
-```
+```text
 src/
 ├── core/                  # 核心源码
 │   ├── dao/               # 数据访问对象
