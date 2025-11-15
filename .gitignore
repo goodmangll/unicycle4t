@@ -5,6 +5,8 @@ docs/
 
 /CLAUDE.md
 
+/.claude/
+
 # 依赖
 node_modules
 

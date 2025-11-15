@@ -23,7 +23,6 @@ export default antfu({
     'no-debugger': 'error',
 
     // TypeScript 特定规则
-    '@typescript-eslint/no-explicit-any': 'warn', // 库可能需要 any，但警告提醒
     '@typescript-eslint/explicit-function-return-type': 'off', // 示例代码不强制要求返回类型
   },
 })
