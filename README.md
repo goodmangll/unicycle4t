@@ -43,14 +43,6 @@ Unicycle4T 是一个轻量级、灵活的 **TypeScript 生命周期管理框架*
 
 **开发指南**：[API文档](#-api文档) → [自定义事件发送](#-自定义事件发送) → [第三方服务集成](#-第三方服务集成) → [贡献指南](#-开发与贡献)
 
-**完整目录**
-- [特性与安装](#✨-特性)
-- [核心概念](#-核心概念)
-- [详细文档](#-api文档)
-- [自定义事件发送](#-自定义事件发送)
-- [示例项目](#-示例项目)
-- [开发贡献](#-开发与贡献)
-
 ## ✨ 特性
 
 - **🔄 统一的生命周期管理**：标准化对象的创建、启动、停止和销毁流程
@@ -168,143 +160,43 @@ ID生成器，负责为生命周期对象生成唯一标识符。UuidLifecycleId
 
 ### 🎯 核心API概览
 
-| API | 用途 | 重要度 | 示例场景 |
-|-----|------|-------|---------|
-| `createObject()` | 创建新对象 | ⭐⭐⭐⭐⭐ | 用户注册、任务创建 |
-| `getObject(id)` | 获取对象 | ⭐⭐⭐⭐⭐ | 状态查询、数据获取 |
-| `startObject(id)` | 启动对象 | ⭐⭐⭐⭐ | 服务启动、任务执行 |
-| `stopObject(id)` | 停止对象 | ⭐⭐⭐⭐ | 服务停止、任务暂停 |
-| `deleteObject(id)` | 删除对象 | ⭐⭐⭐ | 用户注销、任务清理 |
+| API | 用途 | 示例场景 |
+|-----|------|---------|
+| `createObject()` | 创建新对象 | 用户注册、任务创建 |
+| `getObject(id)` | 获取对象 | 状态查询、数据获取 |
+| `startObject(id)` | 启动对象 | 服务启动、任务执行 |
+| `stopObject(id)` | 停止对象 | 服务停止、任务暂停 |
+| `deleteObject(id)` | 删除对象 | 用户注销、任务清理 |
 
-### DefaultLifecycleManager
+### 核心类说明
 
-主要的生命周期管理器，负责协调对象的创建、状态转换和删除。
-
+**DefaultLifecycleManager** - 主要的生命周期管理器
 ```typescript
-import type { LifecycleDao, LifecycleEventData, LifecycleFactory, LifecycleIdGenerator, LifecycleObject, ObjectId } from '@linden/unicycle4t'
-import { Emitter } from 'mitt'
+import { DefaultLifecycleManager } from '@linden/unicycle4t'
 
-class DefaultLifecycleManager {
-  // 事件发射器 - 监听所有生命周期事件
-  public readonly events: Emitter<LifecycleEventData>
-
-  // 构造函数，支持依赖注入自定义组件
-  constructor(factory?: LifecycleFactory, dao?: LifecycleDao, idGenerator?: LifecycleIdGenerator)
-
-  // 🚀 创建新的生命周期对象
-  public async createObject(): Promise<LifecycleObject>
-
-  // 🔍 根据ID获取生命周期对象
-  public async getObject(id: ObjectId): Promise<LifecycleObject | null>
-
-  // ▶️ 启动生命周期对象
-  public async startObject(id: ObjectId): Promise<void>
-
-  // ⏹️ 停止生命周期对象
-  public async stopObject(id: ObjectId): Promise<void>
-
-  // 🗑️ 删除生命周期对象
-  public async deleteObject(id: ObjectId): Promise<void>
-}
-```
-
-**使用示例：**
-```typescript
 const manager = new DefaultLifecycleManager()
 
-// 监听所有事件
+// 监听事件
 manager.events.on('object:created', ({ object }) => {
-  console.log(`✅ 对象已创建: ${object.getId()}`)
+  console.log(`对象已创建: ${object.getId()}`)
 })
 
-manager.events.on('object:stateChanged', ({ objectId, oldState, newState }) => {
-  console.log(`🔄 状态变更: ${objectId} ${oldState.name} → ${newState.name}`)
-})
-
-// 完整的生命周期操作
+// 创建和管理对象
 const object = await manager.createObject()
 await manager.startObject(object.getId())
-await manager.stopObject(object.getId())
-await manager.deleteObject(object.getId())
 ```
 
-### LifecycleObject
-
-生命周期对象是框架的核心概念，代表具有生命周期的实体。
-
+**LifecycleObject** - 生命周期对象基类
 ```typescript
-import type { LifecycleState, ObjectId } from '@linden/unicycle4t'
-
-class LifecycleObject {
-  // 🔑 获取对象唯一标识
-  getId(): ObjectId
-
-  // 🏷️ 设置对象ID（通常由框架内部使用）
-  setId(id: ObjectId): void
-
-  // 📊 获取当前状态
-  getState(): LifecycleState
-
-  // 🔄 设置对象状态
-  setState(state: LifecycleState): void
-
-  // 📦 添加自定义属性
-  setProperty(key: string, value: unknown): void
-
-  // 📋 获取对象属性
-  getProperty(key: string): unknown
-
-  // 🔍 检查属性是否存在
-  hasProperty(key: string): boolean
-}
-```
-
-**属性操作示例：**
-```typescript
-const object = new LifecycleObject()
-
-// 自定义属性存储
-object.setProperty('userData', { name: 'Alice', role: 'admin' })
-object.setProperty('config', { timeout: 3000, retries: 3 })
-
-// 属性获取
-const userData = object.getProperty('userData') as { name: string, role: string }
+// 属性操作
+object.setProperty('config', { timeout: 5000 })
+const config = object.getProperty('config')
 const hasConfig = object.hasProperty('config')
-
-console.log(`用户: ${userData.name}, 角色: ${userData.role}`)
-console.log(`是否已配置: ${hasConfig}`)
 ```
 
-### MemoryLifecycleDao
-
-默认的内存存储实现，适合快速开发和测试场景。
-
-```typescript
-import type { LifecycleDao, LifecycleObject, ObjectId } from '@linden/unicycle4t'
-
-class MemoryLifecycleDao implements LifecycleDao {
-  // 构造函数，初始化内存存储
-  constructor()
-
-  // 💾 创建新对象到内存
-  public async create(object: LifecycleObject): Promise<void>
-
-  // 🔍 根据ID获取对象
-  public async get(id: ObjectId): Promise<LifecycleObject | null>
-
-  // 📝 更新对象信息
-  public async update(object: LifecycleObject): Promise<void>
-
-  // 🗑️ 从内存中删除对象
-  public async delete(id: ObjectId): Promise<void>
-}
-```
-
-**存储层特性：**
-- **内存存储**：数据保存在内存中，重启后丢失
-- **高性能**：无IO操作，读写速度极快
-- **线程安全**：内置Map结构，支持并发访问
-- **开发友好**：适合原型开发和单元测试
+**MemoryLifecycleDao** - 默认内存存储
+- 适用于开发测试和原型阶段
+- 高性能，数据重启后丢失
 
 ---
 
@@ -392,7 +284,7 @@ class CustomLifecycleObject extends LifecycleObject {
     return this.getProperty('metadata')
   }
 
-  // 自定义��务方法
+  // 自定义服务方法
   isExpired(maxAge: number): boolean {
     const metadata = this.getMetadata() as { createdAt: Date }
     return Date.now() - metadata.createdAt.getTime() > maxAge
@@ -437,7 +329,7 @@ class LocalStorageLifecycleDao implements LifecycleDao {
     }
   }
 
-  // 🔧 序列化：将对象转换为可存储格式
+  // 序列化：将对象转换为可存储格式
   private serializeObject(object: LifecycleObject): any {
     return {
       id: object.getId(),
@@ -447,7 +339,7 @@ class LocalStorageLifecycleDao implements LifecycleDao {
     }
   }
 
-  // 🔧 反序列化：从存储数据重建对象
+  // 反序列化：从存储数据重建对象
   private deserializeObject(data: any): LifecycleObject {
     const object = new LifecycleObject()
     object.setId(data.id)
@@ -487,7 +379,7 @@ class LocalStorageLifecycleDao implements LifecycleDao {
     }
   }
 
-  // 🚀 CRUD 操作实现
+  // CRUD 操作实现
   async create(object: LifecycleObject): Promise<void> {
     const storage = this.getStorage()
     const serialized = this.serializeObject(object)
@@ -522,7 +414,7 @@ class LocalStorageLifecycleDao implements LifecycleDao {
   }
 }
 
-// 💡 使用自定义存储
+// 使用自定义存储
 const customDao = new LocalStorageLifecycleDao()
 const manager = new DefaultLifecycleManager(undefined, customDao)
 
@@ -530,36 +422,6 @@ const manager = new DefaultLifecycleManager(undefined, customDao)
 const object = await manager.createObject()
 object.setProperty('userData', { name: 'Alice', theme: 'dark' })
 await manager.startObject(object.getId()) // 状态变更也会持久化
-```
-  }
-
-  async create(object: LifecycleObject): Promise<void> {
-    const storage = this.getStorage()
-    storage[object.getId()] = this.serializeObject(object)
-    this.setStorage(storage)
-  }
-
-  async get(id: ObjectId): Promise<LifecycleObject | null> {
-    const storage = this.getStorage()
-    const data = storage[id]
-    return data ? this.deserializeObject(data) : null
-  }
-
-  async update(object: LifecycleObject): Promise<void> {
-    const storage = this.getStorage()
-    storage[object.getId()] = this.serializeObject(object)
-    this.setStorage(storage)
-  }
-
-  async delete(id: ObjectId): Promise<void> {
-    const storage = this.getStorage()
-    delete storage[id]
-    this.setStorage(storage)
-  }
-}
-
-// 使用自定义DAO
-const manager = new DefaultLifecycleManager(undefined, new LocalStorageLifecycleDao())
 ```
 
 ---
@@ -569,24 +431,15 @@ const manager = new DefaultLifecycleManager(undefined, new LocalStorageLifecycle
 ### ⚙️ 开发环境设置
 
 ```bash
-# 克隆仓库
+# 克隆并安装
 git clone https://github.com/goodmangll/unicycle4t.git
-cd unicycle4t
+cd unicycle4t && pnpm install
 
-# 安装依赖
-pnpm install
-
-# 开发模式运行
-pnpm dev
-
-# 构建项目
-pnpm build
-
-# 运行测试
-pnpm test
-
-# 运行测试覆盖率
-pnpm test:coverage
+# 开发命令
+pnpm dev        # 开发模式
+pnpm build      # 构建
+pnpm test       # 测试
+pnpm test:coverage  # 测试覆盖率
 ```
 
 ### 📁 项目结构
@@ -657,75 +510,30 @@ ISC 许可证是一种宽松的开源许可证，允许：
 
 我们提供了丰富的示例来帮助您快速上手和了解框架的实际应用：
 
-### 🎯 学习路径建议
+### 🎯 学习路径
 
-| 学习阶段 | 推荐示例 | 预计时间 | 学习目标 |
-|---------|---------|---------|---------|
-| 🟢 **入门** | [基础用法示例](./examples/basic-usage/) | 30分钟 | 掌握核心API和基本概念 |
-| 🟡 **进阶** | [Web会话管理](./examples/web-session-manager/) | 1小时 | 学习实际应用场景集成 |
-| 🟠 **高级** | [任务队列系统](./examples/task-queue/) | 2小时 | 掌握复杂业务逻辑处理 |
-| 🔴 **专家** | [缓存管理](./examples/cache-manager/) / [连接池](./examples/connection-pool/) | 3小时 | 深入性能优化和架构设计 |
-
-### 🏗️ 实际应用场景
-
-#### 💻 **Web会话管理**
-`./examples/web-session-manager/`
-- **应用场景**：用户登录、权限管理、会话保持
-- **技术亮点**：JWT集成、自动过期、权限控制
-- **学习要点**：状态持久化、安全设计、中间件模式
-
-#### ⚡ **任务队列系统**
-`./examples/task-queue/`
-- **应用场景**：异步任务处理、后台作业、工作流自动化
-- **技术亮点**：优先级队列、依赖管理、失败重试
-- **学习要点**：并发控制、错误处理、任务调度
-
-#### 🚀 **缓存管理系统**
-`./examples/cache-manager/`
-- **应用场景**：数据缓存、性能优化、内存管理
-- **技术亮点**：LRU算法、TTL过期、热点分析
-- **学习要点**：算法实现、内存优化、性能监控
-
-#### 🔗 **连接池管理**
-`./examples/connection-pool/`
-- **应用场景**：数据库连接、资源复用、并发控制
-- **技术亮点**：连接复用、健康检查、负载均衡
-- **学习要点**：资源管理、并发设计、监控告警
+| 示例项目 | 应用场景 | 学习要点 |
+|---------|---------|---------|
+| 基础用法 | 框架入门 | 生命周期管理、事件系统 |
+| Web会话管理 | 用户认证 | 会话管理、权限控制 |
+| 任务队列 | 异步处理 | 任务调度、错误重试 |
+| 缓存管理 | 性能优化 | LRU算法、TTL管理 |
+| 连接池 | 资源管理 | 连接复用、并发控制 |
 
 ### 🚀 运行示例
 
 ```bash
-# 克隆仓库
-git clone https://github.com/goodmangll/unicycle4t.git
-cd unicycle4t
-
-# 安装依赖
-pnpm install
-
 # 运行基础示例
-cd examples/basic-usage
-pnpm install
-pnpm start
+cd examples/basic-usage && pnpm install && pnpm start
 
 # 运行Web会话管理示例
-cd ../web-session-manager
-pnpm install
-pnpm start
+cd examples/web-session-manager && pnpm install && pnpm start
 ```
 
-## 🎯 示例特色
 
-| 示例项目 | 应用场景 | 学习要点 |
-|---------|---------|---------|
-| 基础用法 | 框架入门 | 生命周期管理、事件系统、自定义对象 |
-| Web会话管理 | 用户认证 | 会话管理、权限控制、状态持久化 |
-| 任务队列 | 异步处理 | 任务调度、优先级、错误重试、依赖处理 |
-| 缓存管理 | 性能优化 | LRU算法、TTL管理、内存优化、热点分析 |
-| 连接池 | 资源管理 | 连接复用、并发控制、健康检查、性能监控 |
+### 💡 最佳实践
 
-### 💡 从示例中学到的最佳实践
-
-1. **生命周期设计模式** - 如何设计具有明确生命周期的对象
+1. **生命周期设计模式** - 设计具有明确生命周期的对象
 2. **事件驱动架构** - 使用事件系统实现松耦合设计
 3. **资源管理策略** - 高效的内存使用和资源回收
 4. **扩展性设计** - 通过继承和组合实现功能扩展
